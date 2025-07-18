@@ -22,7 +22,6 @@ namespace HospitalManagementSystem.DTOs
 		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
 		public string ConfirmPassword { get; set; }
 
-		[Required]
 		public string Role { get; set; } = "Patient";
 
 		[Required]
@@ -37,6 +36,8 @@ namespace HospitalManagementSystem.DTOs
 		[Required]
 		[StringLength(11, ErrorMessage = "Phone number must be 11 digits long.")]
 		public string Phone { get; set; }
+
+		public DateTime DateOfBirth { get; set; }	
 		public string InsuranceProvider { get; set; }
 		public decimal InsuranceDiscount { get; set; }
 	}
