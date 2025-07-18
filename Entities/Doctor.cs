@@ -5,14 +5,7 @@ namespace HospitalManagementSystem.Entities
 {
 	public class Doctor : BaseEntity
 	{
-		[Required]
-		[StringLength(100)]
-		public string FirstName { get; set; }
-
-		[Required]
-		[StringLength(100)]
-		public string LastName { get; set; }
-
+		
 		[Required]
 		[StringLength(50)]
 		public string Specialty { get; set; }
