@@ -67,7 +67,12 @@ namespace HospitalManagementSystem.Data
 					Id = NewId.Next().ToGuid(),
 					Username = "admin",
 					PasswordHash = HashPassword("Admin123"),
-					Role = "Admin",
+					Email = "admin@gmail.com",
+                    FirstName = "Admin",
+                    LastName = "Admin",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    Role = "Admin",
 				}
 			);
 		}
