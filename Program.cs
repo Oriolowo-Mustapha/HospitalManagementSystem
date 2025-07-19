@@ -19,6 +19,12 @@ builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IBillRepository, BillRepository>();
+builder.Services.AddScoped<IAppointmentRepository , AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService >();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IBillingService, BillingService>();
 
 // Register the DbContext with MySQL
 builder.Services.AddDbContext<HSMDbContext>(options =>

@@ -1,24 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HospitalManagementSystem.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HospitalManagementSystem.Entities
 {
-	public class Appointment : BaseEntity
-	{
+    public class Appointment : BaseEntity
+    {
+        [Required]
+        public DateTime AppointmentDate { get; set; }
 
-		[ForeignKey("Patient")]
-		public Guid PatientId { get; set; }
+        [Required]
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 
-		[ForeignKey("Doctor")]
-		public Guid DoctorId { get; set; }
+        public Guid PatientId { get; set; }
+        public Patient Patient { get; set; }
 
-		[Required]
-		public DateTime AppointmentDateTime { get; set; }
+        public Guid DoctorId { get; set; }
+        public Doctor Doctor { get; set; }
 
-		public string Notes { get; set; }
+        public string Notes { get; set; }
 
-		public Patient Patient { get; set; }
-		public Doctor Doctor { get; set; }
-		public List<MedicalService> Services { get; set; }
-	}
+        // Navigation
+        public ICollection<Billing> Bills { get; set; }
+    }
+
 }

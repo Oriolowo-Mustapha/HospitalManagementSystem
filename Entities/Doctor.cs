@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HospitalManagementSystem.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HospitalManagementSystem.Entities
@@ -20,5 +21,6 @@ namespace HospitalManagementSystem.Entities
 		public User User { get; set; }
 		public List<Schedule> Schedules { get; set; }
 		public List<Appointment> Appointments { get; set; }
-	}
+        public DoctorAvailability Availability { get; internal set; }
+    }
 }
