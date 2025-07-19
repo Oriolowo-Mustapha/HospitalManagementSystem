@@ -1,4 +1,6 @@
-﻿namespace HospitalManagementSystem.DTOs
+﻿using HospitalManagementSystem.Enum;
+
+namespace HospitalManagementSystem.DTOs
 {
 	public class DoctorDTO
 	{
@@ -7,5 +9,6 @@
 		public string LastName { get; set; }
 		public string Phone { get; set; }
 		public string Specialty { get; set; }
+		public DoctorAvailability Availability { get; set; }
 	}
 }
