@@ -30,6 +30,11 @@ namespace HospitalManagementSystem.Data
 				.WithOne(p => p.User)
 				.HasForeignKey<Patient>(p => p.UserId);
 
+			modelBuilder.Entity<Schedule>()
+				.HasMany(s => s.Appointments)
+				.WithOne(a => a.Schedule)
+				.HasForeignKey(a => a.ScheduleId);
+
 			modelBuilder.Entity<Doctor>()
 				.HasMany(d => d.Schedules)
 				.WithOne(s => s.Doctor)

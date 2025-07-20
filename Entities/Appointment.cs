@@ -6,22 +6,27 @@ namespace HospitalManagementSystem.Entities
 {
     public class Appointment : BaseEntity
     {
-        [Required]
-        public DateTime AppointmentDate { get; set; }
+         [ForeignKey("Patient")]
+        public Guid PatientId { get; set; }
 
+        [ForeignKey("Doctor")]
+        public Guid DoctorId { get; set; }
+        [ForeignKey("Schedule")]
+        public Guid ScheduleId { get; set; }
+
+        [Required]
+        public DateTime AppointmentDateTime { get; set; }
         [Required]
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
-
-        public Guid PatientId { get; set; }
-        public Patient Patient { get; set; }
-
-        public Guid DoctorId { get; set; }
-        public Doctor Doctor { get; set; }
 
         public string Notes { get; set; }
 
         // Navigation
         public ICollection<Billing> Bills { get; set; }
+        public Patient Patient { get; set; }
+        public Doctor Doctor { get; set; }
+        public Schedule Schedule { get; set; }
+        public List<MedicalService> Services { get; set; }
     }
 
 }

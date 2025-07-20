@@ -27,6 +27,7 @@ namespace HospitalManagementSystem.DTOs
 
 		[Required]
 		public DateTime AppointmentDateTime { get; set; }
+		public AppointmentStatus Status { get; set; }
 	}
 	public class AppointmentUpdateDto
 	{
@@ -36,6 +37,7 @@ namespace HospitalManagementSystem.DTOs
 		public Guid DoctorId { get; set; }
 		[Required]
 		public DateTime AppointmentDateTime { get; set; }
+		public AppointmentStatus Status { get; set; }
 		public string Notes { get; set; }
 	}
 }

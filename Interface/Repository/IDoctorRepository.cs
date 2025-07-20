@@ -12,6 +12,5 @@ namespace HospitalManagementSystem.Interface.Repository
 		Task<Doctor> CreateAsync(Doctor doctor);
 		Task<Doctor> UpdateAsync(Doctor doctor);
 		Task<bool> DeleteAsync(Guid id);
-		Task<bool> UpdateScheduleAsync(Guid doctorId, List<Schedule> schedules);
 	}
 }

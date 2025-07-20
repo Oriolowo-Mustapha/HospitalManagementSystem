@@ -1,10 +1,10 @@
 ﻿namespace HospitalManagementSystem.Enum
 {
-    public enum AppointmentStatus
-    {
-        Pending,
-        Confirmed,
-        Completed,
-        Cancelled
-    }
+	public enum AppointmentStatus
+	{
+		Approved,
+		Pending,
+		Cancelled,
+		Disspproved
+	}
 }
