@@ -1,6 +1,6 @@
 ﻿using HospitalManagementSystem.Entities;
 
-namespace HospitalManagementSystem.Contract.Repository
+namespace HospitalManagementSystem.Interface.Repository
 {
     public interface IBillRepository
     {

@@ -15,7 +15,7 @@ namespace HospitalManagementSystem.Entities
 		[StringLength(11)]
 		public string Phone { get; set; }
 
-		public DoctorAvailability Availability { get; set; }
+		public DoctorAvailability Availability { get; internal set; }
 
 		[ForeignKey("User")]
 		public Guid UserId { get; set; }
@@ -23,6 +23,5 @@ namespace HospitalManagementSystem.Entities
 		public User User { get; set; }
 		public List<Schedule> Schedules { get; set; }
 		public List<Appointment> Appointments { get; set; }
-        public DoctorAvailability Availability { get; internal set; }
-    }
+	}
 }

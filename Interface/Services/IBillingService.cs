@@ -1,7 +1,7 @@
 ﻿using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Entities;
 
-namespace HospitalManagementSystem.Contract.Services
+namespace HospitalManagementSystem.Interface.Services
 {
     public interface IBillingService
     {

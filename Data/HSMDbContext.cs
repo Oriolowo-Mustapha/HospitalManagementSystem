@@ -60,10 +60,10 @@ namespace HospitalManagementSystem.Data
 				.WithOne(s => s.Appointment)
 				.HasForeignKey(s => s.AppointmentId);
 
-			modelBuilder.Entity<Billing>()
-				.HasMany(b => b.Services)
-				.WithOne(ms => ms.Billings)
-				.HasForeignKey(b => b.BillingId);
+			//modelBuilder.Entity<Billing>()
+			//	.HasMany(b => b.Services)
+			//	.WithOne(ms => ms.Billings)
+			//	.HasForeignKey(b => b.BillingId);
 
 			modelBuilder.Entity<User>().HasData(
 				new User

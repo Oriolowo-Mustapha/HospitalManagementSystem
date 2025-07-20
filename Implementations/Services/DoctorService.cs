@@ -1,5 +1,4 @@
 ﻿using HospitalManagementSystem.DTOs;
-using HospitalManagementSystem.Entities;
 using HospitalManagementSystem.Enum;
 using HospitalManagementSystem.Interface.Repository;
 using HospitalManagementSystem.Interface.Services;
@@ -209,8 +208,8 @@ namespace HospitalManagementSystem.Implementations.Services
 		{
 			try
 			{
-				var GetDoctor = await _doctorRepository.GetByIdAsync(id);
-				if (GetDoctor == null)
+				var existingDoctor = await _doctorRepository.GetByIdAsync(id);
+				if (existingDoctor == null)
 				{
 					return new ServiceResponse<DoctorDTO>
 					{
@@ -218,40 +217,37 @@ namespace HospitalManagementSystem.Implementations.Services
 						Message = "Doctor not found"
 					};
 				}
-				var doctor = new Doctor
+
+
+				existingDoctor.Phone = doctorDto.Phone;
+				existingDoctor.Specialty = doctorDto.Specialty;
+				existingDoctor.Availability = doctorDto.Availability;
+				if (!string.IsNullOrWhiteSpace(doctorDto.Password))
 				{
-					Id = id,
-					Phone = doctorDto.Phone,
-					Specialty = doctorDto.Specialty,
-					Availability = doctorDto.Availability,
-					User = new User
-					{
-						Id = GetDoctor.User.Id,
-						FirstName = doctorDto.FirstName,
-						LastName = doctorDto.LastName
-					}
-				};
-				var updatedDoctor = await _doctorRepository.UpdateAsync(doctor);
-				if (updatedDoctor == null)
-				{
-					return new ServiceResponse<DoctorDTO>
-					{
-						IsSuccess = false,
-						Message = "Failed to update doctor"
-					};
+					existingDoctor.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(doctorDto.Password);
 				}
-				var updatedDoctorDto = new DoctorDTO
+				existingDoctor.User.FirstName = doctorDto.FirstName;
+				existingDoctor.User.LastName = doctorDto.LastName;
+				existingDoctor.User.Email = doctorDto.Email;
+
+
+
+				var updatedDoctor = await _doctorRepository.UpdateAsync(existingDoctor);
+
+				var resultDto = new DoctorDTO
 				{
 					Id = updatedDoctor.Id,
 					FirstName = updatedDoctor.User.FirstName,
 					LastName = updatedDoctor.User.LastName,
+					Email = updatedDoctor.User.Email,
 					Phone = updatedDoctor.Phone,
 					Specialty = updatedDoctor.Specialty,
 					Availability = updatedDoctor.Availability
 				};
+
 				return new ServiceResponse<DoctorDTO>
 				{
-					Data = updatedDoctorDto,
+					Data = resultDto,
 					IsSuccess = true,
 					Message = "Doctor updated successfully"
 				};

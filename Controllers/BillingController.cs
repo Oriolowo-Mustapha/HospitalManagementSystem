@@ -1,5 +1,5 @@
-﻿using HospitalManagementSystem.Contract.Services;
-using HospitalManagementSystem.DTOs;
+﻿using HospitalManagementSystem.DTOs;
+using HospitalManagementSystem.Interface.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

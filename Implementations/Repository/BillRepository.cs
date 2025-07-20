@@ -1,10 +1,10 @@
-﻿using HospitalManagementSystem.Contract.Repository;
-using HospitalManagementSystem.Data;
+﻿using HospitalManagementSystem.Data;
 using HospitalManagementSystem.Entities;
 using HospitalManagementSystem.Enum;
+using HospitalManagementSystem.Interface.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace HospitalManagementSystem.Repository
+namespace HospitalManagementSystem.Implementations.Repository
 {
     public class BillRepository : IBillRepository
     {
