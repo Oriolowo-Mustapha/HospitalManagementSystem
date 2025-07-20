@@ -15,8 +15,11 @@ namespace HospitalManagementSystem.Entities
 		[ForeignKey("Appointment")]
 		public Guid AppointmentId { get; set; }
 
+		[ForeignKey("Billing")]
+		public Guid BillingId { get; set; }
+
 		public Appointment Appointment { get; set; }
 
-		public List<Billing> Billings { get; set; }
+		public Billing Billings { get; set; }
 	}
 }

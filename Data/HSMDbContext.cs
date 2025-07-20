@@ -1,8 +1,6 @@
 ﻿using HospitalManagementSystem.Entities;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace HospitalManagementSystem.Data
 {
@@ -57,9 +55,10 @@ namespace HospitalManagementSystem.Data
 				.WithOne(s => s.Appointment)
 				.HasForeignKey(s => s.AppointmentId);
 
-			modelBuilder.Entity<MedicalService>()
-				.HasMany(ms => ms.Billings)
-				.WithMany(b => b.Services);
+			modelBuilder.Entity<Billing>()
+				.HasMany(b => b.Services)
+				.WithOne(ms => ms.Billings)
+				.HasForeignKey(b => b.BillingId);
 
 			modelBuilder.Entity<User>().HasData(
 				new User
@@ -68,22 +67,17 @@ namespace HospitalManagementSystem.Data
 					Username = "admin",
 					PasswordHash = HashPassword("Admin123"),
 					Email = "admin@gmail.com",
-                    FirstName = "Admin",
-                    LastName = "Admin",
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow,
-                    Role = "Admin",
+					FirstName = "Admin",
+					LastName = "Admin",
+					IsActive = true,
+					CreatedAt = DateTime.UtcNow,
+					Role = "Admin",
 				}
 			);
 		}
-		private static string HashPassword(string rawData)
+		private string HashPassword(string password)
 		{
-			using var sha256 = SHA256.Create();
-			var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-			var builder = new StringBuilder();
-			foreach (var b in bytes)
-				builder.Append(b.ToString("x2"));
-			return builder.ToString();
+			return BCrypt.Net.BCrypt.HashPassword(password);
 		}
 
 	}

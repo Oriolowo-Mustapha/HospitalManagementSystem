@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HospitalManagementSystem.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace HospitalManagementSystem.DTOs
 {
@@ -13,8 +14,8 @@ namespace HospitalManagementSystem.DTOs
 	{
 		[Required]
 		public string Username { get; set; }
-    
-        [Required]
+
+		[Required]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
 
@@ -22,7 +23,6 @@ namespace HospitalManagementSystem.DTOs
 		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
 		public string ConfirmPassword { get; set; }
 
-		[Required]
 		public string Role { get; set; } = "Patient";
 
 		[Required]
@@ -37,6 +37,8 @@ namespace HospitalManagementSystem.DTOs
 		[Required]
 		[StringLength(11, ErrorMessage = "Phone number must be 11 digits long.")]
 		public string Phone { get; set; }
+
+		public DateTime DateOfBirth { get; set; }
 		public string InsuranceProvider { get; set; }
 		public decimal InsuranceDiscount { get; set; }
 	}
@@ -62,13 +64,13 @@ namespace HospitalManagementSystem.DTOs
 		[StringLength(50)]
 		public string Specialty { get; set; }
 
+		public DoctorAvailability Availability { get; set; } = DoctorAvailability.Available;
+
 		[Required]
 		public string Email { get; set; }
 		[Required]
 		[StringLength(11, ErrorMessage = "Phone number must be 11 digits long")]
 		public string Phone { get; set; }
-		public string InsuranceProvider { get; set; }
-		public decimal InsuranceDiscount { get; set; }
 	}
 
 

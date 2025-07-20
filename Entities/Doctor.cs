@@ -6,7 +6,7 @@ namespace HospitalManagementSystem.Entities
 {
 	public class Doctor : BaseEntity
 	{
-		
+
 		[Required]
 		[StringLength(50)]
 		public string Specialty { get; set; }
@@ -14,6 +14,8 @@ namespace HospitalManagementSystem.Entities
 		[Required]
 		[StringLength(11)]
 		public string Phone { get; set; }
+
+		public DoctorAvailability Availability { get; set; }
 
 		[ForeignKey("User")]
 		public Guid UserId { get; set; }

@@ -1,8 +1,8 @@
 using HospitalManagementSystem.Contract.Repository;
 using HospitalManagementSystem.Contract.Services;
 using HospitalManagementSystem.Data;
-using HospitalManagementSystem.Repository;
-using HospitalManagementSystem.Services;
+using HospitalManagementSystem.Implementations.Repository;
+using HospitalManagementSystem.Implementations.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

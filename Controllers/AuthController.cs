@@ -1,49 +1,48 @@
-﻿using HospitalManagementSystem.Contract.Services;
-using HospitalManagementSystem.DTOs;
-using Microsoft.AspNetCore.Http;
+﻿using HospitalManagementSystem.DTOs;
+using HospitalManagementSystem.Interface.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
-    {
-        private readonly IUserService _authService;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class AuthController : ControllerBase
+	{
+		private readonly IUserService _authService;
 
-        public AuthController(IUserService authService)
-        {
-            _authService = authService;
-        }
+		public AuthController(IUserService authService)
+		{
+			_authService = authService;
+		}
 
-        
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterPatientRequestDto model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
-            var result = await _authService.SignUpAsync(model);
-            if (!result.IsSuccess)
-                return BadRequest(new { message = result.Message });
+		[HttpPost("register")]
+		public async Task<IActionResult> Register([FromBody] RegisterPatientRequestDto model)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-            return Ok(result.Data);
-        }
+			var result = await _authService.SignUpAsync(model);
+			if (!result.IsSuccess)
+				return BadRequest(new { message = result.Message });
 
-        /// <summary>
-        /// Logs in an existing user
-        /// </summary>
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+			return Ok(result.Data);
+		}
 
-            var result = await _authService.LoginAsync(model);
-            if (!result.IsSuccess)
-                return Unauthorized(new { message = result.Message });
+		/// <summary>
+		/// Logs in an existing user
+		/// </summary>
+		[HttpPost("login")]
+		public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-            return Ok(result.Data);
-        }
-    }
+			var result = await _authService.LoginAsync(model);
+			if (!result.IsSuccess)
+				return Unauthorized(new { message = result.Message });
+
+			return Ok(result.Data);
+		}
+	}
 }
