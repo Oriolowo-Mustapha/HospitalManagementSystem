@@ -1,15 +1,15 @@
-using HospitalManagementSystem.Contract.Repository;
-using HospitalManagementSystem.Contract.Services;
 using HospitalManagementSystem.Data;
 using HospitalManagementSystem.Implementations.Repository;
 using HospitalManagementSystem.Implementations.Services;
+using HospitalManagementSystem.Interface.Repository;
+using HospitalManagementSystem.Interface.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<HSMDbContext>(options =>
-    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 builder.Services.AddControllers();

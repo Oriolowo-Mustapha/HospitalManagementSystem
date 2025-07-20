@@ -20,5 +20,6 @@ namespace HospitalManagementSystem.Entities
 		public int DailyAppointmentLimit { get; set; }
 
 		public Doctor Doctor { get; set; }
+		public List<Appointment> Appointments { get; set; }
 	}
 }

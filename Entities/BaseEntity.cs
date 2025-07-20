@@ -9,5 +9,6 @@ namespace HospitalManagementSystem.Entities
 		public Guid Id { get; set; } = NewId.Next().ToGuid();
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 		public DateTime LastLogin { get; set; } = DateTime.UtcNow;
+		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 	}
 }

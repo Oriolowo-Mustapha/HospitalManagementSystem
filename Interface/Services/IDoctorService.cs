@@ -11,6 +11,5 @@ namespace HospitalManagementSystem.Interface.Services
 		Task<ServiceResponse<List<DoctorDTO>>> GetAllDoctorsAsync();
 		Task<ServiceResponse<DoctorDTO>> UpdateDoctorAsync(Guid id, DoctorDTO doctorDto);
 		Task<ServiceResponse<bool>> DeleteDoctorAsync(Guid id);
-		Task<ServiceResponse<bool>> UpdateDoctorScheduleAsync(Guid doctorId, List<ScheduleDTO> schedules);
 	}
 }

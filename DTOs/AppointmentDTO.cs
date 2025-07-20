@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HospitalManagementSystem.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace HospitalManagementSystem.DTOs
 {
@@ -8,6 +9,7 @@ namespace HospitalManagementSystem.DTOs
 		public Guid PatientId { get; set; }
 		public Guid DoctorId { get; set; }
 		public DateTime AppointmentDateTime { get; set; }
+		public AppointmentStatus AppointmentStatus { get; set; }
 		public string Notes { get; set; }
 	}
 	public class AppointmentRequestDto
@@ -20,6 +22,7 @@ namespace HospitalManagementSystem.DTOs
 
 		[Required]
 		public DateTime AppointmentDateTime { get; set; }
+		public AppointmentStatus Status { get; set; }
 	}
 	public class AppointmentUpdateDto
 	{
@@ -29,6 +32,7 @@ namespace HospitalManagementSystem.DTOs
 		public Guid DoctorId { get; set; }
 		[Required]
 		public DateTime AppointmentDateTime { get; set; }
+		public AppointmentStatus Status { get; set; }
 		public string Notes { get; set; }
 	}
 }
