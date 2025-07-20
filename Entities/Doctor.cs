@@ -23,5 +23,6 @@ namespace HospitalManagementSystem.Entities
 		public User User { get; set; }
 		public List<Schedule> Schedules { get; set; }
 		public List<Appointment> Appointments { get; set; }
-	}
+        public DoctorAvailability Availability { get; internal set; }
+    }
 }

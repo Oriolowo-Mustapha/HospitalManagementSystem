@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HospitalManagementSystem.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HospitalManagementSystem.Entities
@@ -6,21 +7,20 @@ namespace HospitalManagementSystem.Entities
 	public class Billing : BaseEntity
 	{
 
-		[ForeignKey("Patient")]
-		public Guid PatientId { get; set; }
+        public Guid AppointmentId { get; set; }
+        public Appointment Appointment { get; set; }
 
-		[Required]
-		public decimal TotalAmount { get; set; }
+        public Guid PatientId { get; set; }
+        public Patient Patient { get; set; }
 
-		public decimal DiscountApplied { get; set; }
+        public ICollection<BillItem> Items { get; set; } = new List<BillItem>();
 
-		public decimal FinalAmount { get; set; }
+        public decimal TotalAmount => Items?.Sum(x => x.Amount) ?? 0;
 
-		public bool IsPaid { get; set; }
+        public BillingStatus Status { get; set; } = BillingStatus.Pending;
 
-		public DateTime GeneratedDate { get; set; }
+        public DateTime BilledOn { get; set; } = DateTime.UtcNow;
+    }
 
-		public Patient Patient { get; set; }
-		public List<MedicalService> Services { get; set; }
-	}
+
 }

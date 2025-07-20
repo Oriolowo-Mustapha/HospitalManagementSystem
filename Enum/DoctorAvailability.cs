@@ -1,11 +1,11 @@
 ﻿namespace HospitalManagementSystem.Enum
 {
-	public enum DoctorAvailability
-	{
-		Available,
-		Busy,
-		OnLeave,
-		OffDuty,
-		InSurgery
-	}
+    public enum DoctorAvailability
+    {
+        Available,
+        Busy,
+        OnLeave,
+        OffDuty,
+        InSurgery
+    }
 }
