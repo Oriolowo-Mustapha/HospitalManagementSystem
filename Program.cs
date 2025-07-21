@@ -1,4 +1,4 @@
-using HospitalManagementSystem.Data;
+﻿using HospitalManagementSystem.Data;
 using HospitalManagementSystem.Implementations.Repository;
 using HospitalManagementSystem.Implementations.Services;
 using HospitalManagementSystem.Interface.Repository;
@@ -11,6 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); // 👈 Required for Swagger
+builder.Services.AddSwaggerGen();
+
+// Register the DbContext with MySQL
+builder.Services.AddDbContext<HSMDbContext>(options =>
+	options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
@@ -25,17 +34,14 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IBillingService, BillingService>();
 
-// Register the DbContext with MySQL
-builder.Services.AddDbContext<HSMDbContext>(options =>
-	options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.MapOpenApi();
+	app.UseSwagger();                       // 👈 Enables Swagger middleware
+	app.UseSwaggerUI();                    // 👈 Enables Swagger UI
 }
 
 app.UseHttpsRedirection();

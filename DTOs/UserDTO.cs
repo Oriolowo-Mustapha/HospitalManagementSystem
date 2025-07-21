@@ -38,6 +38,7 @@ namespace HospitalManagementSystem.DTOs
 		[StringLength(11, ErrorMessage = "Phone number must be 11 digits long.")]
 		public string Phone { get; set; }
 
+		[Required]
 		public DateTime DateOfBirth { get; set; }
 		public string InsuranceProvider { get; set; }
 		public decimal InsuranceDiscount { get; set; }
