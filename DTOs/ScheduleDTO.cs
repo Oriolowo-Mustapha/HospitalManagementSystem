@@ -4,6 +4,8 @@ namespace HospitalManagementSystem.DTOs
 {
 	public class ScheduleDTO
 	{
+		public Guid Id { get; set; }
+		public Guid DoctorId { get; set; }
 		[Required]
 		public DateTime Date { get; set; }
 

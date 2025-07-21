@@ -441,5 +441,35 @@ namespace HospitalManagementSystem.Implementations.Services
 				Message = "Appointment Rescheduled Successfuly"
 			};
 		}
+
+		public async Task<ServiceResponse<AppointmentDTO>> UpdateAppointmentNote(Guid id, UploadAppointmentNoteRequestDto uploadAppointmentNote)
+		{
+			var GetAppointment = await _appointmentRepository.GetByIdAsync(id);
+			if (GetAppointment == null)
+			{
+				return new ServiceResponse<AppointmentDTO>
+				{
+					IsSuccess = false,
+					Message = "Appointment Not Found."
+				};
+			}
+
+			GetAppointment.Notes = uploadAppointmentNote.Note;
+			var updateAppointment = await _appointmentRepository.UpdateAsync(GetAppointment);
+			if (updateAppointment == null)
+			{
+				return new ServiceResponse<AppointmentDTO>
+				{
+					IsSuccess = false,
+					Message = "Appointment Note Unable Uploaded."
+				};
+			}
+
+			return new ServiceResponse<AppointmentDTO>
+			{
+				IsSuccess = true,
+				Message = "Appoinment Note Uploaded."
+			};
+		}
 	}
 }

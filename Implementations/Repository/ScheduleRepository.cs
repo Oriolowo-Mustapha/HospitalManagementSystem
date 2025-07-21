@@ -1,4 +1,5 @@
 ﻿using HospitalManagementSystem.Data;
+using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Entities;
 using HospitalManagementSystem.Interface.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -83,6 +84,23 @@ namespace HospitalManagementSystem.Implementations.Repository
 
 			await _context.SaveChangesAsync();
 			return existingSchedule;
+		}
+
+		public async Task<bool> ValidateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto, Guid? excludeScheduleId = null)
+		{
+			if (scheduleDto.StartTime >= scheduleDto.EndTime)
+			{
+				return false;
+			}
+
+			var overlappingSchedules = await _context.Schedules
+				.Where(s => s.DoctorId == doctorId &&
+						   s.Date.Date == scheduleDto.Date.Date &&
+						   s.Id != (excludeScheduleId ?? Guid.Empty) &&
+						   (s.StartTime < scheduleDto.EndTime && s.EndTime > scheduleDto.StartTime))
+				.AnyAsync();
+
+			return !overlappingSchedules;
 		}
 	}
 }

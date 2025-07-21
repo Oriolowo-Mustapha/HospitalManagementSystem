@@ -10,6 +10,7 @@ namespace HospitalManagementSystem.Interface.Services
 		Task<ServiceResponse<List<AppointmentDTO>>> GetAppointmentsByPatientIdAsync(Guid patientId);
 		Task<ServiceResponse<AppointmentDTO>> CreateAppointmentAsync(AppointmentRequestDto requestDto);
 		Task<ServiceResponse<AppointmentDTO>> RescheduleAppointmentAsync(Guid id, AppointmentUpdateDto updateDto);
+		Task<ServiceResponse<AppointmentDTO>> UpdateAppointmentNote(Guid id, UploadAppointmentNoteRequestDto uploadAppointmentNote);
 		Task<ServiceResponse<AppointmentDTO>> CancelAppointmentAsync(Guid id);
 		Task<ServiceResponse<AppointmentDTO>> DisapproveAppointmentAsync(Guid id);
 		Task<ServiceResponse<AppointmentDTO>> ApproveAppointmentAsync(Guid id);
