@@ -10,5 +10,7 @@ namespace HospitalManagementSystem.Interface.Repository
 		Task<User> UpdateUserAsync(User user);
 		Task DeleteUserAsync(Guid userId);
 		Task<User> GetUserByEmailAsync(string email);
+		Task<User> GetUserByFirstNameAsync(string FirstName);
+		Task<User> GetUserByLastNameAsync(string LastName);
 	}
 }

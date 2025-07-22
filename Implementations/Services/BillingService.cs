@@ -25,7 +25,7 @@ namespace HospitalManagementSystem.Implementations.Services
 				return new ServiceResponse<Billing>
 				{
 					IsSuccess = false,
-					Message = "Invalid or incomplete appointment"
+					Message = "Invalid or Incomplete appointment"
 				};
 			}
 

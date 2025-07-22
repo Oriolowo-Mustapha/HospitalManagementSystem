@@ -1,5 +1,4 @@
 ﻿using HospitalManagementSystem.DTOs;
-using HospitalManagementSystem.Entities;
 using HospitalManagementSystem.Enum;
 using HospitalManagementSystem.Interface.Repository;
 using HospitalManagementSystem.Interface.Services;
@@ -70,9 +69,9 @@ namespace HospitalManagementSystem.Implementations.Services
 						FirstName = doctor.User.FirstName,
 						LastName = doctor.User.LastName,
 						Phone = doctor.Phone,
+						Email = doctor.User.Email,
 						Specialty = doctor.Specialty,
 						Availability = doctor.Availability,
-
 					});
 				}
 				return new ServiceResponse<List<DoctorDTO>>
@@ -257,67 +256,6 @@ namespace HospitalManagementSystem.Implementations.Services
 			{
 				return new ServiceResponse<DoctorDTO>
 				{
-					IsSuccess = false,
-					Message = $"An error occurred: {ex.Message}"
-				};
-			}
-		}
-
-		public async Task<ServiceResponse<bool>> UpdateDoctorScheduleAsync(Guid doctorId, List<ScheduleDTO> schedules)
-		{
-			try
-			{
-				var existingDoctor = await _doctorRepository.GetByIdAsync(doctorId);
-				if (existingDoctor == null)
-				{
-					return new ServiceResponse<bool>
-					{
-						IsSuccess = false,
-						Message = "Doctor not found"
-					};
-				}
-
-
-				var schedule = new List<Schedule>();
-				foreach (var scheduleDTO in schedules)
-				{
-					schedule.Add(new Schedule
-					{
-						Id = scheduleDTO.Id,
-						DoctorId = scheduleDTO.DoctorId,
-						Date = scheduleDTO.Date,
-						StartTime = scheduleDTO.StartTime,
-						EndTime = scheduleDTO.EndTime,
-						DailyAppointmentLimit = scheduleDTO.DailyAppointmentLimit
-					});
-				}
-				existingDoctor.Schedules = schedule;
-
-				var updatedDoctor = await _doctorRepository.UpdateAsync(existingDoctor);
-
-				var resultDto = new DoctorDTO
-				{
-					Id = updatedDoctor.Id,
-					FirstName = updatedDoctor.User.FirstName,
-					LastName = updatedDoctor.User.LastName,
-					Email = updatedDoctor.User.Email,
-					Phone = updatedDoctor.Phone,
-					Specialty = updatedDoctor.Specialty,
-					Availability = updatedDoctor.Availability
-				};
-
-				return new ServiceResponse<bool>
-				{
-					Data = true,
-					IsSuccess = true,
-					Message = "Doctor updated successfully"
-				};
-			}
-			catch (Exception ex)
-			{
-				return new ServiceResponse<bool>
-				{
-					Data = false,
 					IsSuccess = false,
 					Message = $"An error occurred: {ex.Message}"
 				};

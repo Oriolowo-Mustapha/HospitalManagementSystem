@@ -7,6 +7,7 @@ namespace HospitalManagementSystem.Interface.Repository
 	{
 		Task<Schedule> GetByIdAsync(Guid id);
 		Task<List<Schedule>> GetByDoctorIdAsync(Guid doctorId);
+		Task<Schedule> GetByCurrentScheduleDoctorIdAsync(Guid doctorId);
 		Task<Schedule> CreateAsync(Schedule schedule);
 		Task<Schedule> UpdateAsync(Schedule schedule);
 		Task<bool> DeleteAsync(Guid id);

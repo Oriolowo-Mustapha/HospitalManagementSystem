@@ -44,6 +44,30 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
+				var existUserName = await _userRepository.GetUserByUsernameAsync(model.Username);
+				if (existUserName != null)
+				{
+					return new ServiceResponse<AuthResponseModel>
+					{
+						IsSuccess = false,
+						Message = "User Already Exists With This UserName."
+					};
+				}
+
+				var existFirstName = await _userRepository.GetUserByFirstNameAsync(model.FirstName);
+
+				var existLastName = await _userRepository.GetUserByLastNameAsync(model.LastName);
+
+				if (existFirstName != null && existLastName != null)
+				{
+					return new ServiceResponse<AuthResponseModel>
+					{
+						IsSuccess = false,
+						Message = "User Already Exists with Name"
+					};
+				}
+
+
 				// Create user
 				var user = new User
 				{
@@ -53,7 +77,7 @@ namespace HospitalManagementSystem.Implementations.Services
 					Email = model.Email,
 					Username = model.Username,
 					PasswordHash = HashPassword(model.Password),
-					Role = model.Role,
+					Role = "Patient",
 					IsActive = true,
 					CreatedAt = DateTime.UtcNow
 				};
@@ -68,7 +92,7 @@ namespace HospitalManagementSystem.Implementations.Services
 						Message = "Failed to create user"
 					};
 				}
-				if (model.Role == "Patient")
+				if (createdUser.Role == "Patient")
 				{
 					var patient = new Patient
 					{
@@ -94,7 +118,8 @@ namespace HospitalManagementSystem.Implementations.Services
 						FirstName = model.FirstName,
 						LastName = model.LastName,
 						Token = GenerateJwtToken(createdUser)
-					}
+					},
+					Message = "Registration Successful."
 				};
 			}
 			catch (Exception ex)
@@ -212,6 +237,29 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
+				var existUserName = await _userRepository.GetUserByUsernameAsync(model.Username);
+				if (existUserName != null)
+				{
+					return new ServiceResponse<AuthResponseModel>
+					{
+						IsSuccess = false,
+						Message = "User Already Exists With This UserName."
+					};
+				}
+
+				var existFirstName = await _userRepository.GetUserByFirstNameAsync(model.FirstName);
+
+				var existLastName = await _userRepository.GetUserByLastNameAsync(model.LastName);
+
+				if (existFirstName != null && existLastName != null)
+				{
+					return new ServiceResponse<AuthResponseModel>
+					{
+						IsSuccess = false,
+						Message = "User Already Exists with Name"
+					};
+				}
+
 				// Create user
 				var user = new User
 				{
@@ -220,8 +268,8 @@ namespace HospitalManagementSystem.Implementations.Services
 					LastName = model.LastName,
 					Email = model.Email,
 					Username = model.Username,
-					PasswordHash = HashPassword(model.Password),
-					Role = model.Role,
+					PasswordHash = HashPassword("Doctor123"),
+					Role = "Doctor",
 					IsActive = true,
 					CreatedAt = DateTime.UtcNow
 				};
@@ -236,7 +284,7 @@ namespace HospitalManagementSystem.Implementations.Services
 						Message = "Failed to create doctor"
 					};
 				}
-				if (model.Role == "Doctor")
+				if (createdUser.Role == "Doctor")
 				{
 					var doctor = new Doctor
 					{

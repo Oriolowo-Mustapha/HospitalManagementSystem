@@ -41,6 +41,10 @@ namespace HospitalManagementSystem.Implementations.Repository
 			return await _hSMDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
 		}
 
+		public async Task<User> GetUserByFirstNameAsync(string FirstName)
+		{
+			return await _hSMDbContext.Users.FirstOrDefaultAsync(u => u.FirstName == FirstName);
+		}
 
 		public Task<User> GetUserByIdAsync(Guid userId)
 		{
@@ -52,14 +56,14 @@ namespace HospitalManagementSystem.Implementations.Repository
 			return Task.FromResult(user);
 		}
 
-		public Task<User> GetUserByUsernameAsync(string username)
+		public async Task<User> GetUserByLastNameAsync(string LastName)
 		{
-			var user = _hSMDbContext.Users.FirstOrDefault(u => u.Username == username);
-			if (user == null)
-			{
-				throw new KeyNotFoundException("User not found");
-			}
-			return Task.FromResult(user);
+			return await _hSMDbContext.Users.FirstOrDefaultAsync(u => u.LastName == LastName);
+		}
+
+		public async Task<User> GetUserByUsernameAsync(string username)
+		{
+			return await _hSMDbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
 		}
 
 		public Task<User> UpdateUserAsync(User user)

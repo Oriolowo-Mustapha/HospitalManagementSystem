@@ -22,7 +22,7 @@ namespace HospitalManagementSystem.Entities
 		public string Notes { get; set; }
 
 		// Navigation
-		public ICollection<Billing> Bills { get; set; }
+		public List<Billing> Bills { get; set; }
 		public Patient Patient { get; set; }
 		public Doctor Doctor { get; set; }
 		public Schedule Schedule { get; set; }

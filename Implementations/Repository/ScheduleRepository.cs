@@ -39,6 +39,14 @@ namespace HospitalManagementSystem.Implementations.Repository
 				.CountAsync(a => a.ScheduleId == scheduleId);
 		}
 
+		public async Task<Schedule> GetByCurrentScheduleDoctorIdAsync(Guid doctorId)
+		{
+			return await _context.Schedules
+			   .Include(s => s.Doctor)
+			   .Include(s => s.Appointments)
+			   .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date == DateTime.Now);
+		}
+
 		public async Task<List<Schedule>> GetByDoctorIdAsync(Guid doctorId)
 		{
 			return await _context.Schedules

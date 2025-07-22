@@ -23,8 +23,6 @@ namespace HospitalManagementSystem.DTOs
 		[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
 		public string ConfirmPassword { get; set; }
 
-		public string Role { get; set; } = "Patient";
-
 		[Required]
 		public string FirstName { get; set; }
 
@@ -48,12 +46,6 @@ namespace HospitalManagementSystem.DTOs
 	{
 		[Required]
 		public string Username { get; set; }
-
-		[Required]
-		public string Password { get; set; } = "Doctor123";
-
-		[Required]
-		public string Role { get; set; } = "Doctor";
 
 		[Required]
 		public string FirstName { get; set; }

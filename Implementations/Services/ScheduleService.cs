@@ -8,9 +8,11 @@ namespace HospitalManagementSystem.Implementations.Services
 	public class ScheduleService : IScheduleService
 	{
 		private readonly IScheduleRepository _scheduleRepository;
-		public ScheduleService(IScheduleRepository scheduleRepository)
+		private readonly IDoctorRepository _doctorRepository;
+		public ScheduleService(IScheduleRepository scheduleRepository, IDoctorRepository doctorRepository)
 		{
 			_scheduleRepository = scheduleRepository;
+			_doctorRepository = doctorRepository;
 		}
 		public async Task<ServiceResponse<ScheduleDTO>> CreateScheduleAsync(ScheduleDTO scheduleDto, Guid doctorId)
 		{
@@ -158,19 +160,29 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid id, ScheduleDTO scheduleDto)
+		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto)
 		{
-			var existingSchedule = await _scheduleRepository.GetByIdAsync(id);
+			var existingDoctor = await _doctorRepository.GetByIdAsync(doctorId);
+			if (existingDoctor == null)
+			{
+				return new ServiceResponse<ScheduleDTO>
+				{
+					IsSuccess = false,
+					Message = "Doctor not found"
+				};
+			}
+
+			var existingSchedule = await _scheduleRepository.GetByCurrentScheduleDoctorIdAsync(doctorId);
 			if (existingSchedule == null)
 			{
 				return new ServiceResponse<ScheduleDTO>
 				{
 					IsSuccess = false,
-					Message = "Unable To Retrieve Schedule"
+					Message = $"Schedule on {existingSchedule.Date} Is Unavailable"
 				};
 			}
 
-			if (!await _scheduleRepository.ValidateScheduleAsync(existingSchedule.DoctorId, scheduleDto, id))
+			if (!await _scheduleRepository.ValidateScheduleAsync(doctorId, scheduleDto, existingSchedule.Id))
 			{
 				return new ServiceResponse<ScheduleDTO>
 				{
@@ -182,7 +194,7 @@ namespace HospitalManagementSystem.Implementations.Services
 
 			var schedule = new Schedule
 			{
-				Id = id,
+				Id = existingDoctor.Id,
 				DoctorId = existingSchedule.DoctorId,
 				Date = scheduleDto.Date,
 				StartTime = scheduleDto.StartTime,
