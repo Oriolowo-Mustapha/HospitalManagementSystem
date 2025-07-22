@@ -13,10 +13,11 @@ namespace HospitalManagementSystem.Data
 		public DbSet<Doctor> Doctors { get; set; }
 		public DbSet<Patient> Patients { get; set; }
 		public DbSet<Appointment> Appointments { get; set; }
-		public DbSet<MedicalService> MedicalServices { get; set; }
-		public DbSet<Billing> Billings { get; set; }
+        public DbSet<BillItem> BillItems { get; set; }
+        public DbSet<Billing> Billings { get; set; }
 		public DbSet<User> Users { get; set; }
 		public DbSet<Schedule> Schedules { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
@@ -60,12 +61,19 @@ namespace HospitalManagementSystem.Data
 				.WithOne(s => s.Appointment)
 				.HasForeignKey(s => s.AppointmentId);
 
-			//modelBuilder.Entity<Billing>()
-			//	.HasMany(b => b.Services)
-			//	.WithOne(ms => ms.Billings)
-			//	.HasForeignKey(b => b.BillingId);
+            //modelBuilder.Entity<Billing>()
+            //	.HasMany(b => b.Services)
+            //	.WithOne(ms => ms.Billings)
+            //	.HasForeignKey(b => b.BillingId);
 
-			modelBuilder.Entity<User>().HasData(
+            modelBuilder.Entity<Billing>()
+				.HasMany(b => b.Items)
+				.WithOne(i => i.Bill)
+				.HasForeignKey(i => i.BillingId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<User>().HasData(
 				new User
 				{
 					Id = NewId.Next().ToGuid(),

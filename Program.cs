@@ -40,8 +40,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();                       // 👈 Enables Swagger middleware
-	app.UseSwaggerUI();                    // 👈 Enables Swagger UI
+	app.UseSwagger();                      
+	app.UseSwaggerUI();                    
 }
 
 app.UseHttpsRedirection();

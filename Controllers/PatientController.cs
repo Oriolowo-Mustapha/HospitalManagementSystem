@@ -1,8 +1,7 @@
 ﻿using HospitalManagementSystem.DTOs;
-using HospitalManagementSystem.Services;
+using HospitalManagementSystem.Interface.Services;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
+
 
 namespace HospitalManagementSystem.Controllers
 {
