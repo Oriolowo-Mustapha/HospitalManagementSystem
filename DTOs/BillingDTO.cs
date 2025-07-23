@@ -36,6 +36,7 @@ namespace HospitalManagementSystem.DTOs
         public string PatientFirstName { get; set; }
         public string PatientLastName { get; set; }
         public List<BillingItemDto> Items { get; set; }
+        public string BillingStatus { get; set; }
     }
 
     public class BillingItemDto

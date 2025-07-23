@@ -104,7 +104,7 @@ namespace HospitalManagementSystem.Implementations.Services
                 AppointmentId = b.AppointmentId,
                 PatientFirstName = b.Appointment?.Patient?.User?.FirstName,
                 PatientLastName = b.Appointment?.Patient?.User?.LastName,
-
+				BillingStatus = b.Status.ToString(),
                 Items = b.Items.Select(i => new BillingItemDto
                 {
                     Description = i.Description,
