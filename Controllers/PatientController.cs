@@ -53,21 +53,19 @@ namespace HospitalManagementSystem.Controllers
 			return Ok(response.Data);
 		}
 
-		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] PatientDTO patientDto)
-		{
-			if (patientDto == null)
-			{
-				return BadRequest("Patient data is required.");
-			}
-
-			var response = await _patientService.UpdatePatientAsync(id, patientDto);
-			if (!response.IsSuccess)
-			{
-				return BadRequest(response.Message);
-			}
-			return NoContent();
-		}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientDTO patientDto)
+        {
+            try
+            {
+                await _patientService.UpdatePatientAsync(id, patientDto);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeletePatient(Guid id)

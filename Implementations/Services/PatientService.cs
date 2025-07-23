@@ -1,6 +1,9 @@
 ﻿using HospitalManagementSystem.DTOs;
+using HospitalManagementSystem.Entities;
+using HospitalManagementSystem.Implementations.Repository;
 using HospitalManagementSystem.Interface.Repository;
 using HospitalManagementSystem.Interface.Services;
+using System.Numerics;
 
 namespace HospitalManagementSystem.Implementations.Services
 {
@@ -29,49 +32,31 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
-				var patientDto = new PatientDTO
-				{
-					Id = patient.Id,
-					FirstName = patient.User.FirstName,
-					LastName = patient.User.LastName,
-					Phone = patient.Phone,
-					Email = patient.User.Email,
-					InsuranceProvider = patient.InsuranceProvider,
-					InsuranceDiscount = patient.InsuranceDiscount
-				};
-
-				return new ServiceResponse<PatientDTO>
-				{
-					Data = patientDto,
-					IsSuccess = true,
-					Message = "Patient retrieved successfully."
-				};
-			}
-			catch (Exception ex)
+			return new PatientDTO
 			{
-				return new ServiceResponse<PatientDTO>
-				{
-					IsSuccess = false,
-					Message = $"Failed to retrieve patient: {ex.Message}"
-				};
-			}
-		}
+				Id = patient.Id,
+				Phone = patient.Phone,
+				InsuranceProvider = patient.InsuranceProvider,
+				InsuranceDiscount = patient.InsuranceDiscount,
+                Name = $"{patient.User.FirstName} {patient.User.LastName}",
+				Email = patient.User.Email
+            };
+        }
 
-		public async Task<ServiceResponse<List<PatientDTO>>> GetAllPatientsAsync()
+		public async Task<IEnumerable<GetAllPatients>> GetAllPatientsAsync()
 		{
-			try
+			var patients = await _patientRepository.GetAllPatientsAsync();
+			var patientDtos = new List<GetAllPatients>();
+
+			foreach (var patient in patients)
 			{
-				var patients = await _patientRepository.GetAllPatientsAsync();
-				var patientDtos = patients.Select(patient => new PatientDTO
-				{
-					Id = patient.Id,
-					FirstName = patient.User.FirstName,
-					LastName = patient.User.LastName,
-					Phone = patient.Phone,
-					Email = patient.User.Email,
-					InsuranceProvider = patient.InsuranceProvider,
-					InsuranceDiscount = patient.InsuranceDiscount
-				}).ToList();
+				patientDtos.Add(new GetAllPatients
+                {					
+					Phone = patient.Phone,					
+                     Name = $"{patient.User.FirstName} {patient.User.LastName}",
+                    Email = patient.User.Email
+                });
+			}
 
 				return new ServiceResponse<List<PatientDTO>>
 				{
@@ -104,119 +89,56 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
-				var patientDto = new PatientDTO
-				{
-					Id = patient.Id,
-					FirstName = patient.User.FirstName,
-					LastName = patient.User.LastName,
-					Phone = patient.Phone,
-					Email = patient.User.Email,
-					InsuranceProvider = patient.InsuranceProvider,
-					InsuranceDiscount = patient.InsuranceDiscount
-				};
-
-				return new ServiceResponse<PatientDTO>
-				{
-					Data = patientDto,
-					IsSuccess = true,
-					Message = "Patient retrieved successfully."
-				};
-			}
-			catch (Exception ex)
+			return new PatientDTO
 			{
-				return new ServiceResponse<PatientDTO>
-				{
-					IsSuccess = false,
-					Message = $"Failed to retrieve patient: {ex.Message}"
-				};
-			}
+				Id = patient.Id,
+				Phone = patient.Phone,
+                Name = $"{patient.User.FirstName} {patient.User.LastName}",
+                Email = patient.User.Email,
+                InsuranceProvider = patient.InsuranceProvider,
+				InsuranceDiscount = patient.InsuranceDiscount
+			};
 		}
 
-		public async Task<ServiceResponse<bool>> UpdatePatientAsync(Guid id, PatientDTO patientDto)
-		{
-			try
+
+			public async Task UpdatePatientAsync(Guid id, UpdatePatientDTO patientDto)
 			{
 				var patient = await _patientRepository.GetPatientByIdAsync(id);
 				if (patient == null)
 				{
-					return new ServiceResponse<bool>
-					{
-						IsSuccess = false,
-						Message = "Patient not found."
-					};
+					throw new Exception("Patient not found");
 				}
 
-				// Check for email uniqueness if changed
-				if (patient.User.Email != patientDto.Email)
-				{
-					var existingPatient = await _patientRepository.GetPatientByEmailAsync(patientDto.Email);
-					if (existingPatient != null && existingPatient.Id != id)
-					{
-						return new ServiceResponse<bool>
-						{
-							IsSuccess = false,
-							Message = "A patient with this email already exists."
-						};
-					}
-				}
-
+				
 				patient.Phone = patientDto.Phone;
-				patient.User.Email = patientDto.Email;
-				patient.User.FirstName = patientDto.FirstName;
-				patient.User.LastName = patientDto.LastName;
 				patient.InsuranceProvider = patientDto.InsuranceProvider;
 				patient.InsuranceDiscount = patientDto.InsuranceDiscount;
 
-				await _patientRepository.UpdatePatientAsync(patient);
-
-				return new ServiceResponse<bool>
+				
+				if (patient.User != null)
 				{
-					Data = true,
-					IsSuccess = true,
-					Message = "Patient updated successfully."
-				};
-			}
-			catch (Exception ex)
-			{
-				return new ServiceResponse<bool>
-				{
-					IsSuccess = false,
-					Message = $"Failed to update patient: {ex.Message}"
-				};
-			}
-		}
+					patient.User.FirstName = patientDto.firstname;
+					patient.User.LastName = patientDto.lastname;
+					patient.User.Email = patientDto.Email;
+					patient.User.Username = patientDto.Username;
 
-		public async Task<ServiceResponse<bool>> DeletePatientAsync(Guid id)
+
+                if (!string.IsNullOrWhiteSpace(patientDto.Password) &&
+                        !BCrypt.Net.BCrypt.Verify(patientDto.Password, patient.User.PasswordHash))
+                {
+                    patient.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(patientDto.Password);
+                }
+
+
+                await _patientRepository.UpdatePatientAsync(patient);
+			}
+        }
+
+
+
+        public async Task DeletePatientAsync(Guid id)
 		{
-			try
-			{
-				var patient = await _patientRepository.GetPatientByIdAsync(id);
-				if (patient == null)
-				{
-					return new ServiceResponse<bool>
-					{
-						IsSuccess = false,
-						Message = "Patient not found."
-					};
-				}
-
-				await _patientRepository.DeletePatientAsync(id);
-
-				return new ServiceResponse<bool>
-				{
-					Data = true,
-					IsSuccess = true,
-					Message = "Patient deleted successfully."
-				};
-			}
-			catch (Exception ex)
-			{
-				return new ServiceResponse<bool>
-				{
-					IsSuccess = false,
-					Message = $"Failed to delete patient: {ex.Message}"
-				};
-			}
+			await _patientRepository.DeletePatientAsync(id);
 		}
 	}
 }

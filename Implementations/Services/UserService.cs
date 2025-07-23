@@ -54,18 +54,18 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
-				var existFirstName = await _userRepository.GetUserByFirstNameAsync(model.FirstName);
+				//var existFirstName = await _userRepository.GetUserByFirstNameAsync(model.FirstName);
 
-				var existLastName = await _userRepository.GetUserByLastNameAsync(model.LastName);
+				//var existLastName = await _userRepository.GetUserByLastNameAsync(model.LastName);
 
-				if (existFirstName != null && existLastName != null)
-				{
-					return new ServiceResponse<AuthResponseModel>
-					{
-						IsSuccess = false,
-						Message = "User Already Exists with Name"
-					};
-				}
+				//if (existFirstName != null && existLastName != null)
+				//{
+				//	return new ServiceResponse<AuthResponseModel>
+				//	{
+				//		IsSuccess = false,
+				//		Message = "User Already Exists with Name"
+				//	};
+				//}
 
 
 				// Create user

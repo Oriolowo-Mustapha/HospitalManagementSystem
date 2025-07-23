@@ -29,9 +29,7 @@ namespace HospitalManagementSystem.Controllers
 			return Ok(result.Data);
 		}
 
-		/// <summary>
-		/// Logs in an existing user
-		/// </summary>
+	
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
 		{
