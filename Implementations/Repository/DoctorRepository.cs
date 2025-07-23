@@ -68,7 +68,7 @@ namespace HospitalManagementSystem.Implementations.Repository
 				.Include(d => d.User)
 				.Include(d => d.Schedules)
 				.Include(d => d.Appointments)
-				.Where(d => d.Specialty.Equals(specialty, StringComparison.OrdinalIgnoreCase))
+				.Where(d => d.Specialty == specialty)
 				.ToListAsync();
 		}
 

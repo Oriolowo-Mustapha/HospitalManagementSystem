@@ -8,7 +8,7 @@ namespace HospitalManagementSystem.Interface.Services
 		Task<ServiceResponse<DoctorDTO>> GetDoctorByIdAsync(Guid id);
 		Task<ServiceResponse<List<DoctorDTO>>> GetBySpecialtyAsync(string specialty);
 		Task<ServiceResponse<List<DoctorDTO>>> GetByAvailability(DoctorAvailability availability);
-		Task<ServiceResponse<List<DoctorDTO>>> GetAllDoctorsAsync();
+		Task<ServiceResponse<List<DoctorResponseModel>>> GetAllDoctorsAsync();
 		Task<ServiceResponse<DoctorDTO>> UpdateDoctorAsync(Guid id, DoctorDTO doctorDto);
 		Task<ServiceResponse<bool>> DeleteDoctorAsync(Guid id);
 	}

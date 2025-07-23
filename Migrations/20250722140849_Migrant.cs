@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HospitalManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Migrant : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -183,11 +183,11 @@ namespace HospitalManagementSystem.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "BillItem",
+                name: "BillItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
-                    BillId = table.Column<Guid>(type: "char(36)", nullable: false),
+                    BillingId = table.Column<Guid>(type: "char(36)", nullable: false),
                     Description = table.Column<string>(type: "longtext", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -196,10 +196,10 @@ namespace HospitalManagementSystem.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BillItem", x => x.Id);
+                    table.PrimaryKey("PK_BillItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BillItem_Billings_BillId",
-                        column: x => x.BillId,
+                        name: "FK_BillItems_Billings_BillingId",
+                        column: x => x.BillingId,
                         principalTable: "Billings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -207,7 +207,7 @@ namespace HospitalManagementSystem.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "MedicalServices",
+                name: "MedicalService",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
@@ -221,15 +221,15 @@ namespace HospitalManagementSystem.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MedicalServices", x => x.Id);
+                    table.PrimaryKey("PK_MedicalService", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MedicalServices_Appointments_AppointmentId",
+                        name: "FK_MedicalService_Appointments_AppointmentId",
                         column: x => x.AppointmentId,
                         principalTable: "Appointments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MedicalServices_Billings_BillingId",
+                        name: "FK_MedicalService_Billings_BillingId",
                         column: x => x.BillingId,
                         principalTable: "Billings",
                         principalColumn: "Id",
@@ -240,7 +240,7 @@ namespace HospitalManagementSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "IsActive", "LastLogin", "LastName", "PasswordHash", "Role", "UpdatedAt", "Username" },
-                values: new object[] { new Guid("38a60000-a75d-38ea-c4b3-08ddc843a6ee"), new DateTime(2025, 7, 21, 10, 45, 4, 886, DateTimeKind.Utc).AddTicks(9880), "admin@gmail.com", "Admin", true, new DateTime(2025, 7, 21, 10, 45, 4, 550, DateTimeKind.Utc).AddTicks(7570), "Admin", "$2a$11$tghTB1noNh5ziMYm/S6l0OZG/hyHe6blJ35WRjouq35pfAMm8M2V6", "Admin", new DateTime(2025, 7, 21, 10, 45, 4, 550, DateTimeKind.Utc).AddTicks(7571), "admin" });
+                values: new object[] { new Guid("38a60000-a75d-38ea-a10a-08ddc9294628"), new DateTime(2025, 7, 22, 14, 8, 46, 767, DateTimeKind.Utc).AddTicks(8055), "admin@gmail.com", "Admin", true, new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874), "Admin", "$2a$11$DK/i24gK1PkbzzlVaBxQDuUMtFoTovcD.//Ip.M90zq/XXJJDVXI.", "Admin", new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874), "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_DoctorId",
@@ -268,9 +268,9 @@ namespace HospitalManagementSystem.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BillItem_BillId",
-                table: "BillItem",
-                column: "BillId");
+                name: "IX_BillItems_BillingId",
+                table: "BillItems",
+                column: "BillingId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_UserId",
@@ -279,13 +279,13 @@ namespace HospitalManagementSystem.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MedicalServices_AppointmentId",
-                table: "MedicalServices",
+                name: "IX_MedicalService_AppointmentId",
+                table: "MedicalService",
                 column: "AppointmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MedicalServices_BillingId",
-                table: "MedicalServices",
+                name: "IX_MedicalService_BillingId",
+                table: "MedicalService",
                 column: "BillingId");
 
             migrationBuilder.CreateIndex(
@@ -304,10 +304,10 @@ namespace HospitalManagementSystem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BillItem");
+                name: "BillItems");
 
             migrationBuilder.DropTable(
-                name: "MedicalServices");
+                name: "MedicalService");
 
             migrationBuilder.DropTable(
                 name: "Billings");

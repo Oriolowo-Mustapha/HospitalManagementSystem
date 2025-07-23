@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HospitalManagementSystem.Migrations
 {
     [DbContext(typeof(HSMDbContext))]
-    [Migration("20250721104506_Initial")]
-    partial class Initial
+    [Migration("20250722140849_Migrant")]
+    partial class Migrant
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,7 +76,7 @@ namespace HospitalManagementSystem.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("BillId")
+                    b.Property<Guid>("BillingId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -94,9 +94,9 @@ namespace HospitalManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BillId");
+                    b.HasIndex("BillingId");
 
-                    b.ToTable("BillItem");
+                    b.ToTable("BillItems");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem.Entities.Billing", b =>
@@ -209,7 +209,7 @@ namespace HospitalManagementSystem.Migrations
 
                     b.HasIndex("BillingId");
 
-                    b.ToTable("MedicalServices");
+                    b.ToTable("MedicalService");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem.Entities.Patient", b =>
@@ -344,16 +344,16 @@ namespace HospitalManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("38a60000-a75d-38ea-c4b3-08ddc843a6ee"),
-                            CreatedAt = new DateTime(2025, 7, 21, 10, 45, 4, 886, DateTimeKind.Utc).AddTicks(9880),
+                            Id = new Guid("38a60000-a75d-38ea-a10a-08ddc9294628"),
+                            CreatedAt = new DateTime(2025, 7, 22, 14, 8, 46, 767, DateTimeKind.Utc).AddTicks(8055),
                             Email = "admin@gmail.com",
                             FirstName = "Admin",
                             IsActive = true,
-                            LastLogin = new DateTime(2025, 7, 21, 10, 45, 4, 550, DateTimeKind.Utc).AddTicks(7570),
+                            LastLogin = new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874),
                             LastName = "Admin",
-                            PasswordHash = "$2a$11$tghTB1noNh5ziMYm/S6l0OZG/hyHe6blJ35WRjouq35pfAMm8M2V6",
+                            PasswordHash = "$2a$11$DK/i24gK1PkbzzlVaBxQDuUMtFoTovcD.//Ip.M90zq/XXJJDVXI.",
                             Role = "Admin",
-                            UpdatedAt = new DateTime(2025, 7, 21, 10, 45, 4, 550, DateTimeKind.Utc).AddTicks(7571),
+                            UpdatedAt = new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874),
                             Username = "admin"
                         });
                 });
@@ -389,7 +389,7 @@ namespace HospitalManagementSystem.Migrations
                 {
                     b.HasOne("HospitalManagementSystem.Entities.Billing", "Bill")
                         .WithMany("Items")
-                        .HasForeignKey("BillId")
+                        .HasForeignKey("BillingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

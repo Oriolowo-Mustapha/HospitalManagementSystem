@@ -54,16 +54,16 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-		public async Task<ServiceResponse<List<DoctorDTO>>> GetAllDoctorsAsync()
+		public async Task<ServiceResponse<List<DoctorResponseModel>>> GetAllDoctorsAsync()
 		{
 			try
 			{
 				var doctors = await _doctorRepository.GetAllAsync();
-				var doctorDtos = new List<DoctorDTO>();
+				var doctorDtos = new List<DoctorResponseModel>();
 
 				foreach (var doctor in doctors)
 				{
-					doctorDtos.Add(new DoctorDTO
+					doctorDtos.Add(new DoctorResponseModel
 					{
 						Id = doctor.Id,
 						FirstName = doctor.User.FirstName,
@@ -74,7 +74,7 @@ namespace HospitalManagementSystem.Implementations.Services
 						Availability = doctor.Availability,
 					});
 				}
-				return new ServiceResponse<List<DoctorDTO>>
+				return new ServiceResponse<List<DoctorResponseModel>>
 				{
 					Data = doctorDtos,
 					IsSuccess = true,
@@ -83,7 +83,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 			catch (Exception ex)
 			{
-				return new ServiceResponse<List<DoctorDTO>>
+				return new ServiceResponse<List<DoctorResponseModel>>
 				{
 					IsSuccess = false,
 					Message = $"An error occurred: {ex.Message}"

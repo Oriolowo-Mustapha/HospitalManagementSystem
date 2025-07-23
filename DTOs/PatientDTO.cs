@@ -10,4 +10,14 @@
 		public string InsuranceProvider { get; set; }
 		public decimal InsuranceDiscount { get; set; }
 	}
+
+	public class UpdatePatientRequestModel
+	{
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+		public string Email { get; set; }
+		public string Phone { get; set; }
+		public string InsuranceProvider { get; set; }
+		public decimal InsuranceDiscount { get; set; }
+	}
 }

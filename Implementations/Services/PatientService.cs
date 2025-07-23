@@ -7,10 +7,12 @@ namespace HospitalManagementSystem.Implementations.Services
 	public class PatientService : IPatientService
 	{
 		private readonly IPatientRepository _patientRepository;
+		private readonly IUserRepository _userRepository;
 
-		public PatientService(IPatientRepository patientRepository)
+		public PatientService(IPatientRepository patientRepository, IUserRepository userRepository)
 		{
 			_patientRepository = patientRepository;
+			_userRepository = userRepository;
 		}
 
 
@@ -132,11 +134,12 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-		public async Task<ServiceResponse<bool>> UpdatePatientAsync(Guid id, PatientDTO patientDto)
+		public async Task<ServiceResponse<bool>> UpdatePatientAsync(Guid id, UpdatePatientRequestModel patientDto)
 		{
 			try
 			{
 				var patient = await _patientRepository.GetPatientByIdAsync(id);
+				var user = await _userRepository.GetUserByIdAsync((Guid)patient.UserId);
 				if (patient == null)
 				{
 					return new ServiceResponse<bool>
@@ -160,10 +163,12 @@ namespace HospitalManagementSystem.Implementations.Services
 					}
 				}
 
+				user.Email = patientDto.Email;
+				user.FirstName = patientDto.FirstName;
+				user.LastName = patientDto.LastName;
+				await _userRepository.UpdateUserAsync(user);
+
 				patient.Phone = patientDto.Phone;
-				patient.User.Email = patientDto.Email;
-				patient.User.FirstName = patientDto.FirstName;
-				patient.User.LastName = patientDto.LastName;
 				patient.InsuranceProvider = patientDto.InsuranceProvider;
 				patient.InsuranceDiscount = patientDto.InsuranceDiscount;
 
@@ -191,6 +196,8 @@ namespace HospitalManagementSystem.Implementations.Services
 			try
 			{
 				var patient = await _patientRepository.GetPatientByIdAsync(id);
+
+				var user = await _userRepository.GetUserByIdAsync((Guid)patient.UserId);
 				if (patient == null)
 				{
 					return new ServiceResponse<bool>
@@ -199,7 +206,7 @@ namespace HospitalManagementSystem.Implementations.Services
 						Message = "Patient not found."
 					};
 				}
-
+				await _userRepository.DeleteUserAsync(user.Id);
 				await _patientRepository.DeletePatientAsync(id);
 
 				return new ServiceResponse<bool>

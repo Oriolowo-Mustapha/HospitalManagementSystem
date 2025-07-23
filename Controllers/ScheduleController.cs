@@ -38,7 +38,7 @@ namespace HospitalManagementSystem.Controllers
 		}
 
 		[HttpPost("doctors/{doctorId}/schedules")]
-		public async Task<IActionResult> CreateSchedule(Guid doctorId, [FromBody] ScheduleDTO scheduleDto)
+		public async Task<IActionResult> CreateSchedule(Guid doctorId, [FromBody] createScheduleRequestModel scheduleDto)
 		{
 			if (scheduleDto == null)
 			{
@@ -54,7 +54,7 @@ namespace HospitalManagementSystem.Controllers
 		}
 
 		[HttpPut("schedules/{id}")]
-		public async Task<IActionResult> UpdateSchedule(Guid id, [FromBody] ScheduleDTO scheduleDto)
+		public async Task<IActionResult> UpdateSchedule(Guid id, [FromBody] createScheduleRequestModel scheduleDto)
 		{
 			if (scheduleDto == null)
 			{
@@ -80,20 +80,20 @@ namespace HospitalManagementSystem.Controllers
 			return NoContent();
 		}
 
-		[HttpPost("schedules/validate")]
-		public async Task<IActionResult> ValidateSchedule(Guid doctorId, [FromBody] ScheduleDTO scheduleDto)
-		{
-			if (scheduleDto == null)
-			{
-				return BadRequest("Schedule data is required.");
-			}
+		//[HttpPost("schedules/validate")]
+		//public async Task<IActionResult> ValidateSchedule(Guid doctorId, [FromBody] createScheduleRequestModel scheduleDto)
+		//{
+		//	if (scheduleDto == null)
+		//	{
+		//		return BadRequest("Schedule data is required.");
+		//	}
 
-			var response = await _scheduleService.ValidateScheduleAsync(doctorId, scheduleDto);
-			if (!response.IsSuccess)
-			{
-				return BadRequest(response.Message);
-			}
-			return Ok(response.Data);
-		}
+		//	var response = await _scheduleService.ValidateScheduleAsync(doctorId, scheduleDto);
+		//	if (!response.IsSuccess)
+		//	{
+		//		return BadRequest(response.Message);
+		//	}
+		//	return Ok(response.Data);
+		//}
 	}
 }

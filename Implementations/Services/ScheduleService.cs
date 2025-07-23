@@ -14,8 +14,17 @@ namespace HospitalManagementSystem.Implementations.Services
 			_scheduleRepository = scheduleRepository;
 			_doctorRepository = doctorRepository;
 		}
-		public async Task<ServiceResponse<ScheduleDTO>> CreateScheduleAsync(ScheduleDTO scheduleDto, Guid doctorId)
+		public async Task<ServiceResponse<ScheduleDTO>> CreateScheduleAsync(createScheduleRequestModel scheduleDto, Guid doctorId)
 		{
+			var doctor = await _doctorRepository.GetByIdAsync(doctorId);
+			if (doctor == null)
+			{
+				return new ServiceResponse<ScheduleDTO>
+				{
+					IsSuccess = false,
+					Message = "Doctor not found"
+				};
+			}
 			if (!await _scheduleRepository.ValidateScheduleAsync(doctorId, scheduleDto))
 			{
 				return new ServiceResponse<ScheduleDTO>
@@ -111,11 +120,11 @@ namespace HospitalManagementSystem.Implementations.Services
 			{
 				Data = GetSchedule,
 				IsSuccess = true,
-				Message = ""
+				Message = "Schedule Retrieved Successfully"
 			};
 		}
 
-		public async Task<ServiceResponse<List<ScheduleDTO>>> GetSchedulesByDoctorIdAsync(Guid doctorId)
+		public async Task<ServiceResponse<List<createScheduleRequestModel>>> GetSchedulesByDoctorIdAsync(Guid doctorId)
 		{
 			try
 			{
@@ -123,18 +132,18 @@ namespace HospitalManagementSystem.Implementations.Services
 
 				if (schedules == null)
 				{
-					return new ServiceResponse<List<ScheduleDTO>>
+					return new ServiceResponse<List<createScheduleRequestModel>>
 					{
 						IsSuccess = false,
 						Message = "Schedule Unavailable.\nPls TryAgain."
 					};
 				}
 
-				var GetSchedule = new List<ScheduleDTO>();
+				var GetSchedule = new List<createScheduleRequestModel>();
 
 				foreach (var schedule in schedules)
 				{
-					GetSchedule.Add(new ScheduleDTO
+					GetSchedule.Add(new createScheduleRequestModel
 					{
 						Date = schedule.Date,
 						StartTime = schedule.StartTime,
@@ -143,7 +152,7 @@ namespace HospitalManagementSystem.Implementations.Services
 					});
 				}
 
-				return new ServiceResponse<List<ScheduleDTO>>
+				return new ServiceResponse<List<createScheduleRequestModel>>
 				{
 					Data = GetSchedule,
 					IsSuccess = true,
@@ -152,7 +161,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 			catch (Exception ex)
 			{
-				return new ServiceResponse<List<ScheduleDTO>>
+				return new ServiceResponse<List<createScheduleRequestModel>>
 				{
 					IsSuccess = false,
 					Message = "Failed to get all doctor's schedule."
@@ -160,29 +169,20 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto)
+		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid Id, createScheduleRequestModel scheduleDto)
 		{
-			var existingDoctor = await _doctorRepository.GetByIdAsync(doctorId);
-			if (existingDoctor == null)
+			var GetScheduleById = await _scheduleRepository.GetByIdAsync(Id);
+			if (GetScheduleById == null)
 			{
 				return new ServiceResponse<ScheduleDTO>
 				{
 					IsSuccess = false,
-					Message = "Doctor not found"
+					Message = "Schedule not found,Try Adding A Schedule Before Updating it."
 				};
 			}
 
-			var existingSchedule = await _scheduleRepository.GetByCurrentScheduleDoctorIdAsync(doctorId);
-			if (existingSchedule == null)
-			{
-				return new ServiceResponse<ScheduleDTO>
-				{
-					IsSuccess = false,
-					Message = $"Schedule on {existingSchedule.Date} Is Unavailable"
-				};
-			}
 
-			if (!await _scheduleRepository.ValidateScheduleAsync(doctorId, scheduleDto, existingSchedule.Id))
+			if (!await _scheduleRepository.ValidateScheduleAsync(GetScheduleById.DoctorId, scheduleDto, Id))
 			{
 				return new ServiceResponse<ScheduleDTO>
 				{
@@ -194,8 +194,8 @@ namespace HospitalManagementSystem.Implementations.Services
 
 			var schedule = new Schedule
 			{
-				Id = existingDoctor.Id,
-				DoctorId = existingSchedule.DoctorId,
+				Id = Id,
+				DoctorId = GetScheduleById.DoctorId,
 				Date = scheduleDto.Date,
 				StartTime = scheduleDto.StartTime,
 				EndTime = scheduleDto.EndTime,
@@ -222,7 +222,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			};
 		}
 
-		public async Task<ServiceResponse<bool>> ValidateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto)
+		public async Task<ServiceResponse<bool>> ValidateScheduleAsync(Guid doctorId, createScheduleRequestModel scheduleDto)
 		{
 			var validate = await _scheduleRepository.ValidateScheduleAsync(doctorId, scheduleDto);
 			if (validate == false)

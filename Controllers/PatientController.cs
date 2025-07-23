@@ -54,7 +54,7 @@ namespace HospitalManagementSystem.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] PatientDTO patientDto)
+		public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientRequestModel patientDto)
 		{
 			if (patientDto == null)
 			{
@@ -66,7 +66,7 @@ namespace HospitalManagementSystem.Controllers
 			{
 				return BadRequest(response.Message);
 			}
-			return NoContent();
+			return Ok(response.Data);
 		}
 
 		[HttpDelete("{id}")]
@@ -77,7 +77,7 @@ namespace HospitalManagementSystem.Controllers
 			{
 				return BadRequest(response.Message);
 			}
-			return NoContent();
+			return Ok(response.Data);
 		}
 	}
 }
