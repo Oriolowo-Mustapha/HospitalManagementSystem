@@ -1,5 +1,6 @@
 ﻿using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Entities;
+using HospitalManagementSystem.Enum;
 using HospitalManagementSystem.Interface.Repository;
 using HospitalManagementSystem.Interface.Services;
 
@@ -76,9 +77,9 @@ namespace HospitalManagementSystem.Implementations.Services
 			};
 		}
 
-		public async Task<ServiceResponse<AppointmentDTO>> CreateAppointmentAsync(AppointmentRequestDto requestDto)
-		{
-			var schedule = await _scheduleRepository.GetValidScheduleForAppointmentAsync(requestDto.DoctorId, requestDto.AppointmentDateTime);
+        public async Task<ServiceResponse<AppointmentDTO>> CreateAppointmentAsync(AppointmentRequestDto requestDto)
+        {
+            var schedule = await _scheduleRepository.GetValidScheduleForAppointmentAsync(requestDto.DoctorId, requestDto.AppointmentDateTime);
 			if (schedule == null)
 			{
 				return new ServiceResponse<AppointmentDTO>
@@ -117,16 +118,20 @@ namespace HospitalManagementSystem.Implementations.Services
 
 			var createdAppointment = await _appointmentRepository.CreateAsync(appointment);
 
-			var updatedAppointment = new AppointmentDTO
-			{
-				Id = createdAppointment.Id,
-				PatientId = createdAppointment.PatientId,
-				DoctorId = createdAppointment.DoctorId,
-				AppointmentDateTime = createdAppointment.AppointmentDateTime,
-				Notes = createdAppointment.Notes
-			};
+            var updatedAppointment = new AppointmentDTO
+            {
+                Id = createdAppointment.Id,
+                PatientId = createdAppointment.PatientId,
+                DoctorId = createdAppointment.DoctorId,
+                Status = createdAppointment.AppointmentStatus.ToString(),
+                DoctorName = $"{createdAppointment.Doctor?.User?.FirstName ?? ""} {createdAppointment.Doctor?.User?.LastName ?? ""}".Trim(),
+                PatientName = $"{createdAppointment.Patient?.User?.FirstName ?? ""} {createdAppointment.Patient?.User?.LastName ?? ""}".Trim(),
+                AppointmentDateTime = createdAppointment.AppointmentDateTime,
+                Notes = createdAppointment.Notes ?? ""
+            };
 
-			return new ServiceResponse<AppointmentDTO>
+
+            return new ServiceResponse<AppointmentDTO>
 			{
 				Data = updatedAppointment,
 				IsSuccess = true,
@@ -190,54 +195,52 @@ namespace HospitalManagementSystem.Implementations.Services
 				Message = "Disapproved Successfully"
 			};
 		}
+        public async Task<ServiceResponse<List<AppointmentDTO>>> GetAllAppointmentsAsync()
+        {
+            try
+            {
+                var appointments = await _appointmentRepository.GetAllAsync();
 
-		public async Task<ServiceResponse<List<AppointmentDTO>>> GetAllAppointmentsAsync()
-		{
-			try
-			{
-				var appointments = await _appointmentRepository.GetAllAsync();
+                if (appointments == null || !appointments.Any())
+                {
+                    return new ServiceResponse<List<AppointmentDTO>>
+                    {
+                        IsSuccess = false,
+                        Message = "No appointments found."
+                    };
+                }
 
-				if (appointments == null)
-				{
-					return new ServiceResponse<List<AppointmentDTO>>
-					{
-						IsSuccess = false,
-						Message = "Appointment Unavailable.\nPls TryAgain."
-					};
-				}
+                var appointmentDTOs = appointments.Select(a => new AppointmentDTO
+                {
+                    Id = a.Id,
+                    PatientId = a.PatientId,
+                    DoctorId = a.DoctorId,
+                    Status = a.AppointmentStatus.ToString(),
+                    DoctorName = $"{a.Doctor?.User?.FirstName ?? ""} {a.Doctor?.User?.LastName ?? ""}".Trim(),
+                    PatientName = $"{a.Patient?.User?.FirstName ?? ""} {a.Patient?.User?.LastName ?? ""}".Trim(),
+                    AppointmentDateTime = a.AppointmentDateTime,
+                    Notes = a.Notes ?? ""
+                }).ToList();
 
-				var GetAppointment = new List<AppointmentDTO>();
+                return new ServiceResponse<List<AppointmentDTO>>
+                {
+                    Data = appointmentDTOs,
+                    IsSuccess = true,
+                    Message = "Appointments retrieved successfully."
+                };
+            }
+            catch (Exception)
+            {
+                return new ServiceResponse<List<AppointmentDTO>>
+                {
+                    IsSuccess = false,
+                    Message = "Failed to get all appointments."
+                };
+            }
+        }
 
-				foreach (var appointment in appointments)
-				{
-					GetAppointment.Add(new AppointmentDTO
-					{
-						Id = appointment.Id,
-						PatientId = appointment.PatientId,
-						DoctorId = appointment.DoctorId,
-						AppointmentDateTime = appointment.AppointmentDateTime,
-						Notes = appointment.Notes
-					});
-				}
 
-				return new ServiceResponse<List<AppointmentDTO>>
-				{
-					Data = GetAppointment,
-					IsSuccess = true,
-					Message = "Appointment Successfully Retrieved."
-				};
-			}
-			catch (Exception ex)
-			{
-				return new ServiceResponse<List<AppointmentDTO>>
-				{
-					IsSuccess = false,
-					Message = "Failed to get all appointment."
-				};
-			}
-		}
-
-		public async Task<ServiceResponse<AppointmentDTO>> GetAppointmentByIdAsync(Guid id)
+        public async Task<ServiceResponse<AppointmentDTO>> GetAppointmentByIdAsync(Guid id)
 		{
 			try
 			{
@@ -252,16 +255,19 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
-				var GetAppointment = new AppointmentDTO
-				{
-					Id = appointment.Id,
-					PatientId = appointment.PatientId,
-					DoctorId = appointment.DoctorId,
-					AppointmentDateTime = appointment.AppointmentDateTime,
-					Notes = appointment.Notes
-				};
+                var GetAppointment = new AppointmentDTO
+                {
+                    Id = appointment.Id,
+                    PatientId = appointment.PatientId,
+                    DoctorId = appointment.DoctorId,
+                    AppointmentDateTime = appointment.AppointmentDateTime,
+                    Notes = appointment.Notes ?? "",
+                    DoctorName = $"{appointment.Doctor?.User?.FirstName} {appointment.Doctor?.User?.LastName}",
+                    PatientName = $"{appointment.Patient?.User?.FirstName} {appointment.Patient?.User?.LastName}",
+                    Status = appointment.AppointmentStatus.ToString()
+                };
 
-				return new ServiceResponse<AppointmentDTO>
+                return new ServiceResponse<AppointmentDTO>
 				{
 					Data = GetAppointment,
 					IsSuccess = true,
@@ -295,19 +301,23 @@ namespace HospitalManagementSystem.Implementations.Services
 
 				var GetAppointment = new List<AppointmentDTO>();
 
-				foreach (var appointment in appointments)
-				{
-					GetAppointment.Add(new AppointmentDTO
-					{
-						Id = appointment.Id,
-						PatientId = appointment.PatientId,
-						DoctorId = appointment.DoctorId,
-						AppointmentDateTime = appointment.AppointmentDateTime,
-						Notes = appointment.Notes
-					});
-				}
+                foreach (var appointment in appointments)
+                {
+                    GetAppointment.Add(new AppointmentDTO
+                    {
+                        Id = appointment.Id,
+                        PatientId = appointment.PatientId,
+                        DoctorId = appointment.DoctorId,
+                        AppointmentDateTime = appointment.AppointmentDateTime,
+                        Notes = appointment.Notes ?? "",
+                        Status = appointment.AppointmentStatus.ToString(),
+                        DoctorName = $"{appointment.Doctor?.User?.FirstName} {appointment.Doctor?.User?.LastName}",
+                        PatientName = $"{appointment.Patient?.User?.FirstName} {appointment.Patient?.User?.LastName}"
+                    });
+                }
 
-				return new ServiceResponse<List<AppointmentDTO>>
+
+                return new ServiceResponse<List<AppointmentDTO>>
 				{
 					Data = GetAppointment,
 					IsSuccess = true,
@@ -330,30 +340,34 @@ namespace HospitalManagementSystem.Implementations.Services
 			{
 				var appointments = await _appointmentRepository.GetByPatientIdAsync(patientId);
 
-				if (appointments == null)
-				{
-					return new ServiceResponse<List<AppointmentDTO>>
-					{
-						IsSuccess = false,
-						Message = "Appointment Unavailable.\nPls TryAgain."
-					};
-				}
+                if (appointments == null || !appointments.Any())
+                {
+                    return new ServiceResponse<List<AppointmentDTO>>
+                    {
+                        IsSuccess = false,
+                        Message = "No appointments found for this patient."
+                    };
+                }
 
-				var GetAppointment = new List<AppointmentDTO>();
 
-				foreach (var appointment in appointments)
-				{
-					GetAppointment.Add(new AppointmentDTO
-					{
-						Id = appointment.Id,
-						PatientId = appointment.PatientId,
-						DoctorId = appointment.DoctorId,
-						AppointmentDateTime = appointment.AppointmentDateTime,
-						Notes = appointment.Notes
-					});
-				}
+                var GetAppointment = new List<AppointmentDTO>();
 
-				return new ServiceResponse<List<AppointmentDTO>>
+                foreach (var appointment in appointments)
+                {
+                    GetAppointment.Add(new AppointmentDTO
+                    {
+                        Id = appointment.Id,
+                        PatientId = appointment.PatientId,
+                        DoctorId = appointment.DoctorId,
+                        AppointmentDateTime = appointment.AppointmentDateTime,
+                        Notes = appointment.Notes ?? "",
+                        Status = appointment.AppointmentStatus.ToString(),
+                        DoctorName = $"{appointment.Doctor?.User?.FirstName} {appointment.Doctor?.User?.LastName}",
+                        PatientName = $"{appointment.Patient?.User?.FirstName} {appointment.Patient?.User?.LastName}"
+                    });
+                }
+
+                return new ServiceResponse<List<AppointmentDTO>>
 				{
 					Data = GetAppointment,
 					IsSuccess = true,
@@ -372,77 +386,83 @@ namespace HospitalManagementSystem.Implementations.Services
 
 
 
-		public async Task<ServiceResponse<AppointmentDTO>> RescheduleAppointmentAsync(Guid id, AppointmentUpdateDto updateDto)
-		{
-			var existingAppointment = await _appointmentRepository.GetByIdAsync(id);
-			if (existingAppointment == null)
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "Appointment slot doesn't exists"
-				};
-			}
+        public async Task<ServiceResponse<AppointmentDTO>> RescheduleAppointmentAsync(Guid id, AppointmentUpdateDto updateDto)
+        {
+            var existingAppointment = await _appointmentRepository.GetByIdAsync(id);
+            if (existingAppointment == null)
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Appointment slot doesn't exist."
+                };
+            }
 
-			var schedule = await _scheduleRepository.GetValidScheduleForAppointmentAsync(updateDto.DoctorId, updateDto.AppointmentDateTime);
-			if (schedule == null)
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "No valid schedule found for the requested appointment time."
-				};
-			}
+            var schedule = await _scheduleRepository.GetValidScheduleForAppointmentAsync(updateDto.DoctorId, updateDto.AppointmentDateTime);
+            if (schedule == null)
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "No valid schedule found for the requested appointment time."
+                };
+            }
 
-			var appointmentCount = await _scheduleRepository.GetAppointmentCountForScheduleAsync(schedule.Id);
-			if (appointmentCount >= schedule.DailyAppointmentLimit && schedule.Id != existingAppointment.ScheduleId)
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "Daily appointment limit reached for this schedule."
-				};
-			}
+            var appointmentCount = await _scheduleRepository.GetAppointmentCountForScheduleAsync(schedule.Id);
+            if (appointmentCount >= schedule.DailyAppointmentLimit && schedule.Id != existingAppointment.ScheduleId)
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Daily appointment limit reached for this schedule."
+                };
+            }
 
-			if (!await _appointmentRepository.IsAppointmentSlotAvailableAsync(schedule.Id, updateDto.AppointmentDateTime, id))
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "Appointment slot is already booked."
-				};
-			}
+            if (!await _appointmentRepository.IsAppointmentSlotAvailableAsync(schedule.Id, updateDto.AppointmentDateTime, id))
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Appointment slot is already booked."
+                };
+            }
 
-			var appointment = new Appointment
-			{
-				Id = id,
-				PatientId = updateDto.PatientId,
-				DoctorId = updateDto.DoctorId,
-				ScheduleId = schedule.Id,
-				AppointmentDateTime = updateDto.AppointmentDateTime,
-				Notes = updateDto.Notes
-			};
+            // Update the existing appointment
+            existingAppointment.PatientId = updateDto.PatientId;
+            existingAppointment.DoctorId = updateDto.DoctorId;
+            existingAppointment.ScheduleId = schedule.Id;
+            existingAppointment.AppointmentDateTime = updateDto.AppointmentDateTime;
+            existingAppointment.Notes ="";
+            existingAppointment.AppointmentStatus = AppointmentStatus.Rescheduled;
+            existingAppointment.UpdatedAt = DateTime.UtcNow;
 
-			var updatedAppointment = await _appointmentRepository.UpdateAsync(appointment);
+            var updatedAppointment = await _appointmentRepository.UpdateAsync(existingAppointment);
 
-			var Update = new AppointmentDTO
-			{
-				Id = updatedAppointment.Id,
-				PatientId = updatedAppointment.PatientId,
-				DoctorId = updatedAppointment.DoctorId,
-				AppointmentDateTime = updatedAppointment.AppointmentDateTime,
-				Notes = updatedAppointment.Notes
-			};
+            // Re-fetch including user navigation properties
+            var populatedAppointment = await _appointmentRepository.GetByIdAsync(updatedAppointment.Id);
 
-			return new ServiceResponse<AppointmentDTO>
-			{
-				Data = Update,
-				IsSuccess = true,
-				Message = "Appointment Rescheduled Successfuly"
-			};
-		}
+            var dto = new AppointmentDTO
+            {
+                Id = populatedAppointment.Id,
+                PatientId = populatedAppointment.PatientId,
+                DoctorId = populatedAppointment.DoctorId,
+                AppointmentDateTime = populatedAppointment.AppointmentDateTime,
+                Notes = populatedAppointment.Notes ?? "",
+                Status = populatedAppointment.AppointmentStatus.ToString(),
+                DoctorName = $"{populatedAppointment.Doctor?.User?.FirstName} {populatedAppointment.Doctor?.User?.LastName}",
+                PatientName = $"{populatedAppointment.Patient?.User?.FirstName} {populatedAppointment.Patient?.User?.LastName}"
+            };
 
-		public async Task<ServiceResponse<AppointmentDTO>> UpdateAppointmentNote(Guid id, UploadAppointmentNoteRequestDto uploadAppointmentNote)
+            return new ServiceResponse<AppointmentDTO>
+            {
+                Data = dto,
+                IsSuccess = true,
+                Message = "Appointment rescheduled successfully."
+            };
+        }
+
+
+        public async Task<ServiceResponse<AppointmentDTO>> UpdateAppointmentNote(Guid id, UploadAppointmentNoteRequestDto uploadAppointmentNote)
 		{
 			var GetAppointment = await _appointmentRepository.GetByIdAsync(id);
 			if (GetAppointment == null)

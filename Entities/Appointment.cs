@@ -19,7 +19,7 @@ namespace HospitalManagementSystem.Entities
 		[Required]
 		public AppointmentStatus AppointmentStatus { get; set; }
 
-		public string Notes { get; set; }
+		public string? Notes { get; set; }
 
 		// Navigation
 		public List<Billing> Bills { get; set; }
