@@ -7,6 +7,7 @@
 		Pending,
 		Cancelled,
 		Disspproved,
-        Rescheduled
+        Rescheduled,
+        Scheduled
     }
 }

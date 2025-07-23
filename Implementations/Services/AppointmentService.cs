@@ -1,6 +1,7 @@
 ﻿using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Entities;
 using HospitalManagementSystem.Enum;
+using HospitalManagementSystem.Implementations.Repository;
 using HospitalManagementSystem.Interface.Repository;
 using HospitalManagementSystem.Interface.Services;
 
@@ -10,11 +11,13 @@ namespace HospitalManagementSystem.Implementations.Services
 	{
 		private readonly IAppointmentRepository _appointmentRepository;
 		private readonly IScheduleRepository _scheduleRepository;
+        private readonly IDoctorRepository _doctorRepository;
 
-		public AppointmentService(IAppointmentRepository appointmentRepository, IScheduleRepository scheduleRepository)
+		public AppointmentService(IAppointmentRepository appointmentRepository, IScheduleRepository scheduleRepository,IDoctorRepository doctorRepository)
 		{
 			_appointmentRepository = appointmentRepository;
 			_scheduleRepository = scheduleRepository;
+            _doctorRepository = doctorRepository;
 		}
 
 		public async Task<ServiceResponse<AppointmentDTO>> ApproveAppointmentAsync(Guid id)
@@ -79,44 +82,57 @@ namespace HospitalManagementSystem.Implementations.Services
 
         public async Task<ServiceResponse<AppointmentDTO>> CreateAppointmentAsync(AppointmentRequestDto requestDto)
         {
+            // ✅ Ensure doctor exists and is a Medical Doctor
+            var doctor = await _doctorRepository.GetByIdAsync(requestDto.DoctorId);
+            if (doctor == null || doctor.Specialty != "Medical Doctor")
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Appointments can only be initially scheduled with a Medical Doctor."
+                };
+            }
+
+            // ✅ Check valid schedule
             var schedule = await _scheduleRepository.GetValidScheduleForAppointmentAsync(requestDto.DoctorId, requestDto.AppointmentDateTime);
-			if (schedule == null)
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "No valid schedule found for the requested appointment time."
-				};
-			}
+            if (schedule == null)
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "No valid schedule found for the requested appointment time."
+                };
+            }
 
-			var appointmentCount = await _scheduleRepository.GetAppointmentCountForScheduleAsync(schedule.Id);
-			if (appointmentCount >= schedule.DailyAppointmentLimit)
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "Daily appointment limit reached for this schedule."
-				};
-			}
+            var appointmentCount = await _scheduleRepository.GetAppointmentCountForScheduleAsync(schedule.Id);
+            if (appointmentCount >= schedule.DailyAppointmentLimit)
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Daily appointment limit reached for this schedule."
+                };
+            }
 
-			if (!await _appointmentRepository.IsAppointmentSlotAvailableAsync(schedule.Id, requestDto.AppointmentDateTime))
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "Appointment slot is already booked."
-				};
-			}
+            if (!await _appointmentRepository.IsAppointmentSlotAvailableAsync(schedule.Id, requestDto.AppointmentDateTime))
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Appointment slot is already booked."
+                };
+            }
 
-			var appointment = new Appointment
-			{
-				PatientId = requestDto.PatientId,
-				DoctorId = requestDto.DoctorId,
-				ScheduleId = schedule.Id,
-				AppointmentDateTime = requestDto.AppointmentDateTime
-			};
+            var appointment = new Appointment
+            {
+                PatientId = requestDto.PatientId,
+                DoctorId = requestDto.DoctorId,
+                ScheduleId = schedule.Id,
+                AppointmentDateTime = requestDto.AppointmentDateTime,
+                AppointmentStatus = AppointmentStatus.Scheduled
+            };
 
-			var createdAppointment = await _appointmentRepository.CreateAsync(appointment);
+            var createdAppointment = await _appointmentRepository.CreateAsync(appointment);
 
             var updatedAppointment = new AppointmentDTO
             {
@@ -130,16 +146,16 @@ namespace HospitalManagementSystem.Implementations.Services
                 Notes = createdAppointment.Notes ?? ""
             };
 
-
             return new ServiceResponse<AppointmentDTO>
-			{
-				Data = updatedAppointment,
-				IsSuccess = true,
-				Message = "Appointment Scheduled Successfully"
-			};
-		}
+            {
+                Data = updatedAppointment,
+                IsSuccess = true,
+                Message = "Appointment Scheduled Successfully"
+            };
+        }
 
-		public async Task<ServiceResponse<bool>> DeleteAppointmentAsync(Guid id)
+
+        public async Task<ServiceResponse<bool>> DeleteAppointmentAsync(Guid id)
 		{
 			var appointment = await _appointmentRepository.GetByIdAsync(id);
 			if (appointment == null)
