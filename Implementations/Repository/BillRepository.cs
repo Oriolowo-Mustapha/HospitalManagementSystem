@@ -31,6 +31,17 @@ namespace HospitalManagementSystem.Implementations.Repository
                 .FirstOrDefaultAsync(b => b.AppointmentId == appointmentId);
         }
 
+        public async Task<Billing> GetBillWithPatientByAppointmentIdAsync(Guid appointmentId)
+        {
+            return await _context.Billings
+                .Include(b => b.Items)
+                .Include(b => b.Appointment)
+                    .ThenInclude(a => a.Patient)
+                        .ThenInclude(p => p.User) // ✅ Include User of Patient
+                .FirstOrDefaultAsync(b => b.AppointmentId == appointmentId);
+        }
+
+
         public async Task<Billing> GetByIdAsync(Guid id)
         {
             return await _context.Billings
@@ -43,10 +54,11 @@ namespace HospitalManagementSystem.Implementations.Repository
         public async Task<List<Billing>> GetAllAsync()
         {
             return await _context.Billings
-                .Include(b => b.Items)
-                .Include(b => b.Appointment)
+            .Include(b => b.Items)
+            .Include(b => b.Appointment)
                 .ThenInclude(a => a.Patient)
-                .ToListAsync();
+                    .ThenInclude(p => p.User)
+            .ToListAsync();
         }
 
         public async Task<bool> MarkAsPaidAsync(Guid billId)

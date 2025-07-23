@@ -9,5 +9,6 @@ namespace HospitalManagementSystem.Interface.Repository
         Task<Billing> GetByIdAsync(Guid id);
         Task<List<Billing>> GetAllAsync();
         Task<bool> MarkAsPaidAsync(Guid billId);
+        Task<Billing> GetBillWithPatientByAppointmentIdAsync(Guid appointmentId);
     }
 }

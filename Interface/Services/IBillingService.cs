@@ -5,9 +5,9 @@ namespace HospitalManagementSystem.Interface.Services
 {
     public interface IBillingService
     {
-        Task<ServiceResponse<Billing>> CreateBillForAppointmentAsync(BillDTO dto);
-        Task<ServiceResponse<Billing>> GetBillByAppointmentIdAsync(Guid appointmentId);
-        Task<ServiceResponse<List<Billing>>> GetAllBillsAsync();
+        Task<ServiceResponse<Billing>> CreateBillForAppointmentAsync(BillingDto dto);
+        Task<ServiceResponse<BillingDto>> GetBillByAppointmentIdAsync(Guid appointmentId);
+          Task<ServiceResponse<List<BillingDto>>> GetAllBillsAsync();
         Task<ServiceResponse<bool>> MarkBillAsPaidAsync(Guid billId);
     }
 }

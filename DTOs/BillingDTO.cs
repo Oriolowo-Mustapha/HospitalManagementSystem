@@ -29,16 +29,20 @@ namespace HospitalManagementSystem.DTOs
     //	public int TotalAppointments { get; set; }
     //}
 
-    public class BillDTO
+    public class BillingDto
     {
+        public Guid Id { get; set; }
         public Guid AppointmentId { get; set; }
-        public List<BillItemDTO> Items { get; set; }
+        public string PatientFirstName { get; set; }
+        public string PatientLastName { get; set; }
+        public List<BillingItemDto> Items { get; set; }
     }
 
-    public class BillItemDTO
+    public class BillingItemDto
     {
         public string Description { get; set; }
         public decimal Amount { get; set; }
     }
+
 
 }

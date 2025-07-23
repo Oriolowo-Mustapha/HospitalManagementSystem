@@ -17,7 +17,7 @@ namespace HospitalManagementSystem.Controllers
         }
 
         [HttpPost("generate")]
-        public async Task<IActionResult> GenerateBill([FromBody] BillDTO dto)
+        public async Task<IActionResult> GenerateBill([FromBody] BillingDto dto)
         {
             var result = await _billingService.CreateBillForAppointmentAsync(dto);
             return result.IsSuccess ? Ok(result) : BadRequest(result);

@@ -479,33 +479,36 @@ namespace HospitalManagementSystem.Implementations.Services
 
 
         public async Task<ServiceResponse<AppointmentDTO>> UpdateAppointmentNote(Guid id, UploadAppointmentNoteRequestDto uploadAppointmentNote)
-		{
-			var GetAppointment = await _appointmentRepository.GetByIdAsync(id);
-			if (GetAppointment == null)
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "Appointment Not Found."
-				};
-			}
+        {
+            var GetAppointment = await _appointmentRepository.GetByIdAsync(id);
+            if (GetAppointment == null)
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Appointment Not Found."
+                };
+            }
 
-			GetAppointment.Notes = uploadAppointmentNote.Note;
-			var updateAppointment = await _appointmentRepository.UpdateAsync(GetAppointment);
-			if (updateAppointment == null)
-			{
-				return new ServiceResponse<AppointmentDTO>
-				{
-					IsSuccess = false,
-					Message = "Appointment Note Unable Uploaded."
-				};
-			}
+            GetAppointment.Notes = uploadAppointmentNote.Note;
+            GetAppointment.AppointmentStatus = uploadAppointmentNote.Status; 
 
-			return new ServiceResponse<AppointmentDTO>
-			{
-				IsSuccess = true,
-				Message = "Appoinment Note Uploaded."
-			};
-		}
-	}
+            var updateAppointment = await _appointmentRepository.UpdateAsync(GetAppointment);
+            if (updateAppointment == null)
+            {
+                return new ServiceResponse<AppointmentDTO>
+                {
+                    IsSuccess = false,
+                    Message = "Appointment Note Unable to Upload."
+                };
+            }
+
+            return new ServiceResponse<AppointmentDTO>
+            {
+                IsSuccess = true,
+                Message = "Appointment Note and Status Updated Successfully."
+            };
+        }
+
+    }
 }

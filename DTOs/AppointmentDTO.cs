@@ -37,13 +37,16 @@ namespace HospitalManagementSystem.DTOs
 		public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 	}
 
-	public class UploadAppointmentNoteRequestDto
-	{
-		[Required]
-		public string Note { get; set; }
-	}
+    public class UploadAppointmentNoteRequestDto
+    {
+        [Required]
+        public string Note { get; set; }
 
-	public class AppointmentUpdateDto
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Completed;
+    }
+
+
+    public class AppointmentUpdateDto
 	{
 		[Required]
 		public Guid PatientId { get; set; }
