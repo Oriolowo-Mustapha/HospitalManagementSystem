@@ -12,106 +12,117 @@ namespace HospitalManagementSystem.Implementations.Services
 		{
 			_doctorRepository = doctorRepository;
 		}
+        public async Task<ServiceResponse<bool>> DeleteDoctorAsync(Guid id)
+        {
+            try
+            {
+                var doctor = await _doctorRepository.GetByIdAsync(id);
+                if (doctor == null)
+                {
+                    return new ServiceResponse<bool>
+                    {
+                        IsSuccess = false,
+                        Data = false,
+                        Message = "Doctor not found"
+                    };
+                }
 
-		public async Task<ServiceResponse<bool>> DeleteDoctorAsync(Guid id)
-		{
-			try
-			{
-				var UserExits = await _doctorRepository.GetByIdAsync(id);
-				if (UserExits == null)
-				{
-					return new ServiceResponse<bool>
-					{
-						IsSuccess = false,
-						Message = "Doctor not found"
-					};
-				}
-				var result = await _doctorRepository.DeleteAsync(id);
-				if (result == true)
-				{
-					return new ServiceResponse<bool>
-					{
-						IsSuccess = true,
-						Message = "Doctor deleted successfully"
-					};
-				}
-				else
-				{
-					return new ServiceResponse<bool>
-					{
-						IsSuccess = false,
-						Message = "Failed to delete doctor"
-					};
-				}
-			}
-			catch (Exception ex)
-			{
-				return new ServiceResponse<bool>
-				{
-					IsSuccess = false,
-					Message = $"An error occurred: {ex.Message}"
-				};
-			}
-		}
+                var result = await _doctorRepository.DeleteAsync(id);
 
-		public async Task<ServiceResponse<List<DoctorDTO>>> GetAllDoctorsAsync()
-		{
-			try
-			{
-				var doctors = await _doctorRepository.GetAllAsync();
-				var doctorDtos = new List<DoctorDTO>();
+                if (result)
+                {
+                    return new ServiceResponse<bool>
+                    {
+                        IsSuccess = true,
+                        Data = true,
+                        Message = "Doctor and associated user deleted successfully"
+                    };
+                }
+                else
+                {
+                    return new ServiceResponse<bool>
+                    {
+                        IsSuccess = false,
+                        Data = false,
+                        Message = "Failed to delete doctor and user"
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<bool>
+                {
+                    IsSuccess = false,
+                    Data = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
 
-				foreach (var doctor in doctors)
-				{
-					doctorDtos.Add(new DoctorDTO
-					{
-						Id = doctor.Id,
-						FirstName = doctor.User.FirstName,
-						LastName = doctor.User.LastName,
-						Phone = doctor.Phone,
-						Email = doctor.User.Email,
-						Specialty = doctor.Specialty,
-						Availability = doctor.Availability,
-					});
-				}
-				return new ServiceResponse<List<DoctorDTO>>
-				{
-					Data = doctorDtos,
-					IsSuccess = true,
-					Message = "Doctors retrieved successfully"
-				};
-			}
-			catch (Exception ex)
-			{
-				return new ServiceResponse<List<DoctorDTO>>
-				{
-					IsSuccess = false,
-					Message = $"An error occurred: {ex.Message}"
-				};
-			}
-		}
 
-		public async Task<ServiceResponse<List<DoctorDTO>>> GetByAvailability(DoctorAvailability availability)
+        public async Task<ServiceResponse<List<GetAllDoctors>>> GetAllDoctorsAsync()
+        {
+            try
+            {
+                var doctors = await _doctorRepository.GetAllAsync();
+
+                if (doctors == null || !doctors.Any())
+                {
+                    return new ServiceResponse<List<GetAllDoctors>>
+                    {
+                        IsSuccess = false,
+                        Message = "No doctors found"
+                    };
+                }
+
+                var doctorDtos = new List<GetAllDoctors>();
+
+                foreach (var doctor in doctors)
+                {
+                    doctorDtos.Add(new GetAllDoctors
+                    {
+                        FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
+                        Email = doctor.User.Email,
+                        Specialty = doctor.Specialty,
+                    });
+                }
+
+                return new ServiceResponse<List<GetAllDoctors>>
+                {
+                    Data = doctorDtos,
+                    IsSuccess = true,
+                    Message = "Doctors retrieved successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<List<GetAllDoctors>>
+                {
+                    IsSuccess = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
+
+
+        public async Task<ServiceResponse<List<GetAllDoctors>>> GetByAvailability(DoctorAvailability availability)
 		{
 			try
 			{
 				var doctors = await _doctorRepository.GetByAvailability(availability);
-				var doctorDtos = new List<DoctorDTO>();
+				var doctorDtos = new List<GetAllDoctors>();
 
 				foreach (var doctor in doctors)
 				{
-					doctorDtos.Add(new DoctorDTO
-					{
-						Id = doctor.Id,
-						FirstName = doctor.User.FirstName,
-						LastName = doctor.User.LastName,
-						Phone = doctor.Phone,
-						Specialty = doctor.Specialty,
-						Availability = doctor.Availability,
+					doctorDtos.Add(new GetAllDoctors
+                    {
+                        FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
+                        Email = doctor.User.Email,
+                        Specialty = doctor.Specialty,
 
-					});
+                    });
 				}
-				return new ServiceResponse<List<DoctorDTO>>
+				return new ServiceResponse<List<GetAllDoctors>>
 				{
 					Data = doctorDtos,
 					IsSuccess = true,
@@ -120,7 +131,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 			catch (Exception ex)
 			{
-				return new ServiceResponse<List<DoctorDTO>>
+				return new ServiceResponse<List<GetAllDoctors>>
 				{
 					IsSuccess = false,
 					Message = $"An error occurred: {ex.Message}"
@@ -128,44 +139,54 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-		public async Task<ServiceResponse<List<DoctorDTO>>> GetBySpecialtyAsync(string specialty)
-		{
-			try
-			{
-				var doctors = await _doctorRepository.GetBySpecialtyAsync(specialty);
-				var doctorDtos = new List<DoctorDTO>();
+        public async Task<ServiceResponse<List<GetAllDoctors>>> GetBySpecialtyAsync(string specialty)
+        {
+            try
+            {
+                var doctors = await _doctorRepository.GetBySpecialtyAsync(specialty);
 
-				foreach (var doctor in doctors)
-				{
-					doctorDtos.Add(new DoctorDTO
-					{
-						Id = doctor.Id,
-						FirstName = doctor.User.FirstName,
-						LastName = doctor.User.LastName,
-						Phone = doctor.Phone,
-						Specialty = doctor.Specialty,
-						Availability = doctor.Availability,
+                if (doctors == null || !doctors.Any())
+                {
+                    return new ServiceResponse<List<GetAllDoctors>>
+                    {
+                        IsSuccess = false,
+                        Data = null,
+                        Message = $"No doctors found with specialty '{specialty}'."
+                    };
+                }
 
-					});
-				}
-				return new ServiceResponse<List<DoctorDTO>>
-				{
-					Data = doctorDtos,
-					IsSuccess = true,
-					Message = "Doctors retrieved successfully"
-				};
-			}
-			catch (Exception ex)
-			{
-				return new ServiceResponse<List<DoctorDTO>>
-				{
-					IsSuccess = false,
-					Message = $"An error occurred: {ex.Message}"
-				};
-			}
-		}
+                var doctorDtos = new List<GetAllDoctors>();
 
-		public async Task<ServiceResponse<DoctorDTO>> GetDoctorByIdAsync(Guid id)
+                foreach (var doctor in doctors)
+                {
+                    doctorDtos.Add(new GetAllDoctors
+                    {
+                        FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
+                        Email = doctor.User.Email,
+                        Specialty = doctor.Specialty,
+
+                    });
+                }
+
+                return new ServiceResponse<List<GetAllDoctors>>
+                {
+                    Data = doctorDtos,
+                    IsSuccess = true,
+                    Message = "Doctors retrieved successfully"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResponse<List<GetAllDoctors>>
+                {
+                    IsSuccess = false,
+                    Data = null,
+                    Message = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<ServiceResponse<DoctorDTO>> GetDoctorByIdAsync(Guid id)
 		{
 			try
 			{
@@ -185,8 +206,10 @@ namespace HospitalManagementSystem.Implementations.Services
 					LastName = doctor.User.LastName,
 					Phone = doctor.Phone,
 					Specialty = doctor.Specialty,
-					Availability = doctor.Availability,
+					Availability = doctor.Availability.ToString(),
+					Email = doctor.User.Email
 				};
+
 				return new ServiceResponse<DoctorDTO>
 				{
 					Data = doctorDto,
@@ -204,7 +227,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-		public async Task<ServiceResponse<DoctorDTO>> UpdateDoctorAsync(Guid id, DoctorDTO doctorDto)
+		public async Task<ServiceResponse<DoctorDTO>> UpdateDoctorAsync(Guid id, UpdateDoctorDTO doctorDto)
 		{
 			try
 			{
@@ -242,7 +265,7 @@ namespace HospitalManagementSystem.Implementations.Services
 					Email = updatedDoctor.User.Email,
 					Phone = updatedDoctor.Phone,
 					Specialty = updatedDoctor.Specialty,
-					Availability = updatedDoctor.Availability
+					Availability = updatedDoctor.Availability.ToString()
 				};
 
 				return new ServiceResponse<DoctorDTO>
