@@ -29,7 +29,7 @@ namespace HospitalManagementSystem.Implementations.Repository
 				.Include(p => p.Appointments)
 				.Include(p => p.Billings)
 				.Include(p => p.User)
-				.FirstOrDefaultAsync(p => p.Id == id);
+				.FirstOrDefaultAsync(p => p.Id == id || p.UserId == id);
 		}
 
 		public async Task<IEnumerable<Patient>> GetAllPatientsAsync()

@@ -55,7 +55,7 @@ namespace HospitalManagementSystem.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> Update(Guid id, [FromBody] DoctorDTO doctorDto)
+		public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDoctorDTO doctorDto)
 		{
 			var response = await _doctorService.UpdateDoctorAsync(id, doctorDto);
 			return response.IsSuccess ? Ok(response) : NotFound(response);

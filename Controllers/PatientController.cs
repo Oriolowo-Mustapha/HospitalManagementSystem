@@ -60,7 +60,7 @@ namespace HospitalManagementSystem.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] PatientDTO patientDto)
+        public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientDTO patientDto)
         {
             try
             {

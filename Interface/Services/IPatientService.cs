@@ -6,9 +6,9 @@ namespace HospitalManagementSystem.Interface.Services
 	{
 		Task<PatientDTO> RegisterPatientAsync(RegisterPatientRequestDto requestDto);
 		Task<PatientDTO> GetPatientByIdAsync(Guid id);
-		Task<IEnumerable<PatientDTO>> GetAllPatientsAsync();
+		Task<IEnumerable<GetAllPatients>> GetAllPatientsAsync();
 		Task<PatientDTO> GetPatientByEmailAsync(string email);
-		Task UpdatePatientAsync(Guid id, PatientDTO patientDto);
+		Task UpdatePatientAsync(Guid id, UpdatePatientDTO patientDto);
 		Task DeletePatientAsync(Guid id);
 	}
 }

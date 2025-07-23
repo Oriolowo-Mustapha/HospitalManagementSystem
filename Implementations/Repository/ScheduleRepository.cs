@@ -52,7 +52,7 @@ namespace HospitalManagementSystem.Implementations.Repository
 			return await _context.Schedules
 				.Include(s => s.Doctor)
 				.Include(s => s.Appointments)
-				.Where(s => s.DoctorId == doctorId)
+				.Where(s => s.DoctorId == doctorId || s.Id == doctorId)
 				.ToListAsync();
 		}
 
