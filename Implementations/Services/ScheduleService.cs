@@ -123,53 +123,51 @@ namespace HospitalManagementSystem.Implementations.Services
 				Message = "Schedule Retrieved Successfully"
 			};
 		}
-
-		public async Task<ServiceResponse<List<createScheduleRequestModel>>> GetSchedulesByDoctorIdAsync(Guid doctorId)
+		public async Task<ServiceResponse<List<ScheduleDTO>>> GetSchedulesByDoctorIdAsync(Guid doctorId)
 		{
 			try
 			{
 				var schedules = await _scheduleRepository.GetByDoctorIdAsync(doctorId);
 
-				if (schedules == null)
+				// Check for both null and empty list
+				if (schedules == null || !schedules.Any())
 				{
-					return new ServiceResponse<List<createScheduleRequestModel>>
+					return new ServiceResponse<List<ScheduleDTO>>
 					{
 						IsSuccess = false,
-						Message = "Schedule Unavailable.\nPls TryAgain."
+						Message = "No schedules available for this doctor."
 					};
 				}
 
-				var GetSchedule = new List<createScheduleRequestModel>();
-
-				foreach (var schedule in schedules)
+				var scheduleDtos = schedules.Select(schedule => new ScheduleDTO
 				{
-					GetSchedule.Add(new createScheduleRequestModel
-					{
-						Date = schedule.Date,
-						StartTime = schedule.StartTime,
-						EndTime = schedule.EndTime,
-						DailyAppointmentLimit = schedule.DailyAppointmentLimit
-					});
-				}
+					Date = schedule.Date,
+					StartTime = schedule.StartTime,
+					Id = schedule.Id,
+					DoctorId = schedule.DoctorId,
+					EndTime = schedule.EndTime,
+					DailyAppointmentLimit = schedule.DailyAppointmentLimit
+				}).ToList();
 
-				return new ServiceResponse<List<createScheduleRequestModel>>
+				return new ServiceResponse<List<ScheduleDTO>>
 				{
-					Data = GetSchedule,
+					Data = scheduleDtos,
 					IsSuccess = true,
-					Message = "Schedule Successfully Retrieved."
+					Message = "Doctor Schedules retrieved successfully."
 				};
 			}
 			catch (Exception ex)
 			{
-				return new ServiceResponse<List<createScheduleRequestModel>>
+				return new ServiceResponse<List<ScheduleDTO>>
 				{
 					IsSuccess = false,
-					Message = "Failed to get all doctor's schedule."
+					Message = $"Error retrieving schedules: {ex.Message}"
 				};
 			}
 		}
 
-		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid Id, createScheduleRequestModel scheduleDto)
+
+		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid Id, Guid doctorId, createScheduleRequestModel scheduleDto)
 		{
 			var GetScheduleById = await _scheduleRepository.GetByIdAsync(Id);
 			if (GetScheduleById == null)

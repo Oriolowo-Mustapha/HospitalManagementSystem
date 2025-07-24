@@ -65,13 +65,12 @@ namespace HospitalManagementSystem.Implementations.Services
 				{
 					doctorDtos.Add(new DoctorResponseModel
 					{
-						Id = doctor.Id,
 						FirstName = doctor.User.FirstName,
 						LastName = doctor.User.LastName,
 						Phone = doctor.Phone,
 						Email = doctor.User.Email,
 						Specialty = doctor.Specialty,
-						Availability = doctor.Availability,
+						Availability = doctor.Availability.ToString(),
 					});
 				}
 				return new ServiceResponse<List<DoctorResponseModel>>
@@ -107,7 +106,7 @@ namespace HospitalManagementSystem.Implementations.Services
 						LastName = doctor.User.LastName,
 						Phone = doctor.Phone,
 						Specialty = doctor.Specialty,
-						Availability = doctor.Availability,
+						Availability = doctor.Availability.ToString(),
 
 					});
 				}
@@ -144,7 +143,7 @@ namespace HospitalManagementSystem.Implementations.Services
 						LastName = doctor.User.LastName,
 						Phone = doctor.Phone,
 						Specialty = doctor.Specialty,
-						Availability = doctor.Availability,
+						Availability = doctor.Availability.ToString(),
 
 					});
 				}
@@ -185,7 +184,7 @@ namespace HospitalManagementSystem.Implementations.Services
 					LastName = doctor.User.LastName,
 					Phone = doctor.Phone,
 					Specialty = doctor.Specialty,
-					Availability = doctor.Availability,
+					Availability = doctor.Availability.ToString(),
 				};
 				return new ServiceResponse<DoctorDTO>
 				{
@@ -221,7 +220,16 @@ namespace HospitalManagementSystem.Implementations.Services
 
 				existingDoctor.Phone = doctorDto.Phone;
 				existingDoctor.Specialty = doctorDto.Specialty;
-				existingDoctor.Availability = doctorDto.Availability;
+				string availabilityInput = doctorDto.Availability?.Trim();
+
+				if (System.Enum.TryParse<DoctorAvailability>(availabilityInput, true, out var parsedAvailability))
+				{
+					existingDoctor.Availability = parsedAvailability;
+				}
+				else
+				{
+					throw new ArgumentException("Invalid doctor availability value.");
+				}
 				if (!string.IsNullOrWhiteSpace(doctorDto.Password))
 				{
 					existingDoctor.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(doctorDto.Password);
@@ -242,7 +250,7 @@ namespace HospitalManagementSystem.Implementations.Services
 					Email = updatedDoctor.User.Email,
 					Phone = updatedDoctor.Phone,
 					Specialty = updatedDoctor.Specialty,
-					Availability = updatedDoctor.Availability
+					Availability = updatedDoctor.Availability.ToString()
 				};
 
 				return new ServiceResponse<DoctorDTO>

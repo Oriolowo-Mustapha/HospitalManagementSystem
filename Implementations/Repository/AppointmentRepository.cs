@@ -18,8 +18,15 @@ namespace HospitalManagementSystem.Implementations.Repository
 		{
 			await _context.Appointments.AddAsync(appointment);
 			await _context.SaveChangesAsync();
-			return appointment;
+
+			var createdAppointment = await _context.Appointments
+				.Include(a => a.Doctor).ThenInclude(d => d.User)
+				.Include(a => a.Patient).ThenInclude(p => p.User)
+				.FirstOrDefaultAsync(a => a.Id == appointment.Id);
+
+			return createdAppointment!;
 		}
+
 
 		public async Task<bool> DeleteAsync(Guid id)
 		{
@@ -31,16 +38,18 @@ namespace HospitalManagementSystem.Implementations.Repository
 			_context.Appointments.Remove(appointment);
 			return true;
 		}
-
 		public async Task<List<Appointment>> GetAllAsync()
 		{
 			return await _context.Appointments
 				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
 				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
 				.Include(a => a.Schedule)
 				.Include(a => a.Services)
 				.ToListAsync();
 		}
+
 
 		public async Task<List<Appointment>> GetByAppointmentStatus(AppointmentStatus appointmentStatus)
 		{
@@ -57,18 +66,23 @@ namespace HospitalManagementSystem.Implementations.Repository
 		{
 			return await _context.Appointments
 				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
 				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
 				.Include(a => a.Schedule)
 				.Include(a => a.Services)
-				.Where(a => a.DoctorId == doctorId)
+				.Where(a => a.DoctorId == doctorId || a.Id == doctorId)
 				.ToListAsync();
 		}
+
 
 		public async Task<Appointment> GetByIdAsync(Guid id)
 		{
 			return await _context.Appointments
 				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
 				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
 				.Include(a => a.Schedule)
 				.Include(a => a.Services)
 				.FirstOrDefaultAsync(a => a.Id == id);
@@ -78,12 +92,15 @@ namespace HospitalManagementSystem.Implementations.Repository
 		{
 			return await _context.Appointments
 				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
 				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
 				.Include(a => a.Schedule)
 				.Include(a => a.Services)
-				.Where(a => a.PatientId == patientId)
+				.Where(a => a.PatientId == patientId || a.Id == patientId)
 				.ToListAsync();
 		}
+
 
 		public async Task<List<Appointment>> GetByScheduleIdAsync(Guid scheduleId)
 		{

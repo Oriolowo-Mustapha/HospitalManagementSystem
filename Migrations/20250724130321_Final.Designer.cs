@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HospitalManagementSystem.Migrations
 {
     [DbContext(typeof(HSMDbContext))]
-    [Migration("20250722140849_Migrant")]
-    partial class Migrant
+    [Migration("20250724130321_Final")]
+    partial class Final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -344,16 +344,16 @@ namespace HospitalManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("38a60000-a75d-38ea-a10a-08ddc9294628"),
-                            CreatedAt = new DateTime(2025, 7, 22, 14, 8, 46, 767, DateTimeKind.Utc).AddTicks(8055),
+                            Id = new Guid("38a60000-a75d-38ea-9d8f-08ddcab274d5"),
+                            CreatedAt = new DateTime(2025, 7, 24, 13, 3, 17, 594, DateTimeKind.Utc).AddTicks(829),
                             Email = "admin@gmail.com",
                             FirstName = "Admin",
                             IsActive = true,
-                            LastLogin = new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874),
+                            LastLogin = new DateTime(2025, 7, 24, 13, 3, 16, 962, DateTimeKind.Utc).AddTicks(3959),
                             LastName = "Admin",
-                            PasswordHash = "$2a$11$DK/i24gK1PkbzzlVaBxQDuUMtFoTovcD.//Ip.M90zq/XXJJDVXI.",
+                            PasswordHash = "$2a$11$RVNaSblk59Wjb5bUgTn9AOV9p/m2j.a9JRCE5xnFoxE9zvW0b61ku",
                             Role = "Admin",
-                            UpdatedAt = new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874),
+                            UpdatedAt = new DateTime(2025, 7, 24, 13, 3, 16, 962, DateTimeKind.Utc).AddTicks(3959),
                             Username = "admin"
                         });
                 });

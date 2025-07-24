@@ -6,6 +6,8 @@
 		Completed,
 		Pending,
 		Cancelled,
-		Disspproved
+		Disspproved,
+		Rescheduled,
+		Scheduled
 	}
 }

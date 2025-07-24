@@ -1,23 +1,15 @@
 ﻿using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Enum;
 using HospitalManagementSystem.Interface.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class DoctorController : ControllerBase
+	public class DoctorController(IScheduleService _scheduleService, IUserService _userService, IDoctorService _doctorService) : ControllerBase
 	{
-		private readonly IDoctorService _doctorService;
-		private readonly IUserService _userService;
-
-		public DoctorController(IDoctorService doctorService, IUserService userService)
-		{
-			_doctorService = doctorService;
-			_userService = userService;
-		}
-
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
@@ -32,6 +24,7 @@ namespace HospitalManagementSystem.Controllers
 			return response.IsSuccess ? Ok(response) : NotFound(response);
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> CreateDoctor([FromBody] AddDoctorRequestDto dto)
 		{
@@ -39,6 +32,20 @@ namespace HospitalManagementSystem.Controllers
 			return result.IsSuccess ? Ok(result) : BadRequest(result);
 		}
 
+		[Authorize(Roles = "Doctor")]
+		[HttpGet("Schedules")]
+		public async Task<IActionResult> GetSchedulesByDoctorId()
+		{
+			var doctorId = GetGuidClaim("DoctorId");
+			var response = await _scheduleService.GetSchedulesByDoctorIdAsync(doctorId);
+
+			if (!response.IsSuccess)
+			{
+				return NotFound(new { message = response.Message });
+			}
+
+			return Ok(response);
+		}
 
 		[HttpGet("availability/{availability}")]
 		public async Task<IActionResult> GetByAvailability(DoctorAvailability availability)
@@ -47,14 +54,16 @@ namespace HospitalManagementSystem.Controllers
 			return response.IsSuccess ? Ok(response) : NotFound(response);
 		}
 
-		[HttpGet("specialty/{specialty}")]
-		public async Task<IActionResult> GetBySpecialty(string specialty)
+		[HttpGet("{specialty}")]
+		public async Task<IActionResult> GetBySpecialty()
 		{
-			var response = await _doctorService.GetBySpecialtyAsync(specialty);
+			var doctorId = GetGuidClaim("DoctorId");
+			var doc = await _doctorService.GetDoctorByIdAsync(doctorId);
+			var response = await _doctorService.GetBySpecialtyAsync(doc.Data.Specialty);
 			return response.IsSuccess ? Ok(response) : NotFound(response);
 		}
 
-		[HttpPut("{id}")]
+		[HttpPut("update-profile")]
 		public async Task<IActionResult> Update(Guid id, [FromBody] DoctorDTO doctorDto)
 		{
 			var response = await _doctorService.UpdateDoctorAsync(id, doctorDto);
@@ -66,6 +75,17 @@ namespace HospitalManagementSystem.Controllers
 		{
 			var response = await _doctorService.DeleteDoctorAsync(id);
 			return response.IsSuccess ? Ok(response) : NotFound(response);
+		}
+
+		private string? GetClaimValue(string claimType)
+		{
+			return User.FindFirst(claimType)?.Value;
+		}
+
+		private Guid GetGuidClaim(string claimType)
+		{
+			var value = GetClaimValue(claimType);
+			return Guid.TryParse(value, out var guid) ? guid : Guid.Empty;
 		}
 	}
 }

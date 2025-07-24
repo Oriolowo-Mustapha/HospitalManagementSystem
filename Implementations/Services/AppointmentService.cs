@@ -420,7 +420,6 @@ namespace HospitalManagementSystem.Implementations.Services
 				DoctorId = updateDto.DoctorId,
 				ScheduleId = schedule.Id,
 				AppointmentDateTime = updateDto.AppointmentDateTime,
-				Notes = updateDto.Notes
 			};
 
 			var updatedAppointment = await _appointmentRepository.UpdateAsync(appointment);

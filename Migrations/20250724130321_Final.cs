@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HospitalManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class Migrant : Migration
+    public partial class Final : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -240,7 +240,7 @@ namespace HospitalManagementSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "IsActive", "LastLogin", "LastName", "PasswordHash", "Role", "UpdatedAt", "Username" },
-                values: new object[] { new Guid("38a60000-a75d-38ea-a10a-08ddc9294628"), new DateTime(2025, 7, 22, 14, 8, 46, 767, DateTimeKind.Utc).AddTicks(8055), "admin@gmail.com", "Admin", true, new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874), "Admin", "$2a$11$DK/i24gK1PkbzzlVaBxQDuUMtFoTovcD.//Ip.M90zq/XXJJDVXI.", "Admin", new DateTime(2025, 7, 22, 14, 8, 46, 438, DateTimeKind.Utc).AddTicks(7874), "admin" });
+                values: new object[] { new Guid("38a60000-a75d-38ea-9d8f-08ddcab274d5"), new DateTime(2025, 7, 24, 13, 3, 17, 594, DateTimeKind.Utc).AddTicks(829), "admin@gmail.com", "Admin", true, new DateTime(2025, 7, 24, 13, 3, 16, 962, DateTimeKind.Utc).AddTicks(3959), "Admin", "$2a$11$RVNaSblk59Wjb5bUgTn9AOV9p/m2j.a9JRCE5xnFoxE9zvW0b61ku", "Admin", new DateTime(2025, 7, 24, 13, 3, 16, 962, DateTimeKind.Utc).AddTicks(3959), "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_DoctorId",

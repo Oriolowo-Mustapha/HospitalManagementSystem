@@ -1,9 +1,11 @@
 ﻿using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Interface.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Controllers
 {
+	[Authorize(Roles = "Patient")]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class PatientController : ControllerBase
@@ -56,17 +58,15 @@ namespace HospitalManagementSystem.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientRequestModel patientDto)
 		{
-			if (patientDto == null)
+			try
 			{
-				return BadRequest("Patient data is required.");
+				await _patientService.UpdatePatientAsync(id, patientDto);
+				return NoContent();
 			}
-
-			var response = await _patientService.UpdatePatientAsync(id, patientDto);
-			if (!response.IsSuccess)
+			catch (Exception ex)
 			{
-				return BadRequest(response.Message);
+				return BadRequest(ex.Message);
 			}
-			return Ok(response.Data);
 		}
 
 		[HttpDelete("{id}")]
