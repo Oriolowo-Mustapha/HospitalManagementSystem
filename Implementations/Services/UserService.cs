@@ -17,11 +17,12 @@ namespace HospitalManagementSystem.Implementations.Services
 		private readonly IDoctorRepository _doctorRepository;
 		private readonly ILogger<UserService> _logger;
 		private readonly IConfiguration _configuration;
+		private readonly IInsuranceRepository _insuranceRepository;
 		private readonly HttpClient _httpClient;
 
 
 		public UserService(IUserRepository userRepository, IPatientRepository patient, ILogger<UserService> logger, IConfiguration configuration,
-			HttpClient httpClient, IDoctorRepository doctorRepository)
+			HttpClient httpClient, IDoctorRepository doctorRepository, IInsuranceRepository insuranceRepository)
 		{
 			_userRepository = userRepository;
 			_patientRepository = patient;
@@ -29,6 +30,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			_configuration = configuration;
 			_httpClient = httpClient;
 			_doctorRepository = doctorRepository;
+			_insuranceRepository = insuranceRepository;
 		}
 
 		public async Task<ServiceResponse<AuthSignUpResponseModel>> SignUpAsync(RegisterPatientRequestDto model)
@@ -51,24 +53,22 @@ namespace HospitalManagementSystem.Implementations.Services
 					return new ServiceResponse<AuthSignUpResponseModel>
 					{
 						IsSuccess = false,
-						Message = "User Already Exists With This UserName."
+						Message = "User already exists with this username"
 					};
 				}
-				//var existFirstName = await _userRepository.GetUserByFirstNameAsync(model.FirstName);
 
-				//var existLastName = await _userRepository.GetUserByLastNameAsync(model.LastName);
+				// ✅ Validate Insurance Provider Name and get InsuranceId
+				var insurance = await _insuranceRepository.GetByNameAsync(model.InsuranceProvider);
+				if (insurance == null)
+				{
+					return new ServiceResponse<AuthSignUpResponseModel>
+					{
+						IsSuccess = false,
+						Message = "Invalid insurance provider. Not registered with the hospital."
+					};
+				}
 
-				//if (existFirstName != null && existLastName != null)
-				//{
-				//	return new ServiceResponse<AuthResponseModel>
-				//	{
-				//		IsSuccess = false,
-				//		Message = "User Already Exists with Name"
-				//	};
-				//}
-
-
-				// Create user
+				// ✅ Create User
 				var user = new User
 				{
 					Id = Guid.NewGuid(),
@@ -92,16 +92,17 @@ namespace HospitalManagementSystem.Implementations.Services
 						Message = "Failed to create user"
 					};
 				}
+
+				// ✅ Create Patient linked to Insurance
 				if (createdUser.Role == "Patient")
 				{
 					var patient = new Patient
 					{
 						Id = Guid.NewGuid(),
 						Phone = model.Phone,
-						InsuranceProvider = model.InsuranceProvider,
-						InsuranceDiscount = model.InsuranceDiscount,
 						DateOfBirth = model.DateOfBirth,
 						UserId = createdUser.Id,
+						InsuranceId = insurance.Id
 					};
 
 					await _patientRepository.CreatePatientAsync(patient);
@@ -117,7 +118,7 @@ namespace HospitalManagementSystem.Implementations.Services
 						FirstName = model.FirstName,
 						LastName = model.LastName
 					},
-					Message = "Registration Successful."
+					Message = "Registration successful."
 				};
 			}
 			catch (Exception ex)
@@ -130,6 +131,7 @@ namespace HospitalManagementSystem.Implementations.Services
 				};
 			}
 		}
+
 
 
 		public async Task<ServiceResponse<AuthResponseModel>> LoginAsync(LoginRequestDto model)

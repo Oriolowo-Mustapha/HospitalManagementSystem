@@ -1,4 +1,5 @@
 ﻿using HospitalManagementSystem.Entities;
+using HospitalManagementSystem.Enum;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,8 @@ namespace HospitalManagementSystem.Data
 		{
 
 		}
+		public DbSet<Specialty> Specialties { get; set; }
+		public DbSet<Insurance> Insurances { get; set; }
 		public DbSet<Doctor> Doctors { get; set; }
 		public DbSet<Patient> Patients { get; set; }
 		public DbSet<Appointment> Appointments { get; set; }
@@ -71,6 +74,21 @@ namespace HospitalManagementSystem.Data
 				.WithOne(i => i.Bill)
 				.HasForeignKey(i => i.BillingId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Specialty>().HasData(
+		   System.Enum.GetNames(typeof(DoctorSpecialty)).Select((name, index) =>
+			   new Specialty { Id = index + 1, Name = name })
+			);
+
+			modelBuilder.Entity<Insurance>()
+				.HasIndex(i => i.Name)
+				.IsUnique();
+
+			modelBuilder.Entity<Patient>()
+				.HasOne(p => p.Insurance)
+				.WithMany(i => i.Patients)
+				.HasForeignKey(p => p.InsuranceId)
+				.OnDelete(DeleteBehavior.SetNull);
 
 
 			modelBuilder.Entity<User>().HasData(
