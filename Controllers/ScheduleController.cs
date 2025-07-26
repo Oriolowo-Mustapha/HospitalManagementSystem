@@ -16,8 +16,17 @@ namespace HospitalManagementSystem.Controllers
 			_scheduleService = scheduleService;
 		}
 
+		[HttpGet("doctors/{doctorId}/schedules")]
+		public async Task<IActionResult> GetSchedulesByDoctorId(Guid doctorId)
+		{
+			var response = await _scheduleService.GetSchedulesByDoctorIdAsync(doctorId);
 
-
+			if (!response.IsSuccess)
+			{
+				return NotFound(response.Message);
+			}
+			return Ok(response.Data);
+		}
 
 		[HttpGet("schedules/{id}")]
 		public async Task<IActionResult> GetScheduleById(Guid id)
@@ -54,7 +63,7 @@ namespace HospitalManagementSystem.Controllers
 				return BadRequest("Schedule data is required.");
 			}
 
-			var response = await _scheduleService.UpdateScheduleAsync(id, id, scheduleDto);
+			var response = await _scheduleService.UpdateScheduleAsync(id, scheduleDto);
 			if (!response.IsSuccess)
 			{
 				return BadRequest(response.Message);

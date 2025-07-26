@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HospitalManagementSystem.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace HospitalManagementSystem.DTOs
 {
@@ -69,6 +70,8 @@ namespace HospitalManagementSystem.DTOs
 		[Required(ErrorMessage = "Specialty is required.")]
 		[StringLength(50, MinimumLength = 2, ErrorMessage = "Specialty must be between 2 and 50 characters.")]
 		public string Specialty { get; set; }
+
+		public DoctorAvailability Availability { get; set; } = DoctorAvailability.Available;
 
 		[Required(ErrorMessage = "Email is required.")]
 		[EmailAddress(ErrorMessage = "Invalid email format.")]

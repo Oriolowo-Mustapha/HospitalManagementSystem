@@ -153,7 +153,7 @@ namespace HospitalManagementSystem.Implementations.Services
 				{
 					Data = scheduleDtos,
 					IsSuccess = true,
-					Message = "Doctor Schedules retrieved successfully."
+					Message = "Schedules retrieved successfully."
 				};
 			}
 			catch (Exception ex)
@@ -167,9 +167,9 @@ namespace HospitalManagementSystem.Implementations.Services
 		}
 
 
-		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid Id, Guid doctorId, createScheduleRequestModel scheduleDto)
+		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid doctorId, createScheduleRequestModel scheduleDto)
 		{
-			var GetScheduleById = await _scheduleRepository.GetByIdAsync(Id);
+			var GetScheduleById = await _scheduleRepository.GetByIdAsync(doctorId);
 			if (GetScheduleById == null)
 			{
 				return new ServiceResponse<ScheduleDTO>
@@ -180,7 +180,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 
 
-			if (!await _scheduleRepository.ValidateScheduleAsync(GetScheduleById.DoctorId, scheduleDto, Id))
+			if (!await _scheduleRepository.ValidateScheduleAsync(GetScheduleById.DoctorId, scheduleDto, GetScheduleById.Id))
 			{
 				return new ServiceResponse<ScheduleDTO>
 				{
@@ -192,7 +192,6 @@ namespace HospitalManagementSystem.Implementations.Services
 
 			var schedule = new Schedule
 			{
-				Id = Id,
 				DoctorId = GetScheduleById.DoctorId,
 				Date = scheduleDto.Date,
 				StartTime = scheduleDto.StartTime,

@@ -65,8 +65,7 @@ namespace HospitalManagementSystem.Implementations.Services
 				{
 					doctorDtos.Add(new DoctorResponseModel
 					{
-						FirstName = doctor.User.FirstName,
-						LastName = doctor.User.LastName,
+						FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
 						Phone = doctor.Phone,
 						Email = doctor.User.Email,
 						Specialty = doctor.Specialty,
