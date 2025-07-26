@@ -41,10 +41,11 @@ namespace HospitalManagementSystem.Implementations.Repository
 
 		public async Task<Schedule> GetByCurrentScheduleDoctorIdAsync(Guid doctorId)
 		{
+			var today = DateTime.Today;
 			return await _context.Schedules
 			   .Include(s => s.Doctor)
 			   .Include(s => s.Appointments)
-			   .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date == DateTime.Now);
+			   .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date.Date == today);
 		}
 
 		public async Task<List<Schedule>> GetByDoctorIdAsync(Guid doctorId)
@@ -94,7 +95,7 @@ namespace HospitalManagementSystem.Implementations.Repository
 			return existingSchedule;
 		}
 
-		public async Task<bool> ValidateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto, Guid? excludeScheduleId = null)
+		public async Task<bool> ValidateScheduleAsync(Guid doctorId, createScheduleRequestModel scheduleDto, Guid? excludeScheduleId = null)
 		{
 			if (scheduleDto.StartTime >= scheduleDto.EndTime)
 			{

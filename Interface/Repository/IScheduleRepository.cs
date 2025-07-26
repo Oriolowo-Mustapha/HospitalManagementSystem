@@ -13,6 +13,6 @@ namespace HospitalManagementSystem.Interface.Repository
 		Task<bool> DeleteAsync(Guid id);
 		Task<Schedule> GetValidScheduleForAppointmentAsync(Guid doctorId, DateTime appointmentDateTime);
 		Task<int> GetAppointmentCountForScheduleAsync(Guid scheduleId);
-		Task<bool> ValidateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto, Guid? excludeScheduleId = null);
+		Task<bool> ValidateScheduleAsync(Guid doctorId, createScheduleRequestModel scheduleDto, Guid? excludeScheduleId = null);
 	}
 }

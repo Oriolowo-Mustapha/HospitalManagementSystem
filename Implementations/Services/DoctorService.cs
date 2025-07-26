@@ -12,117 +12,70 @@ namespace HospitalManagementSystem.Implementations.Services
 		{
 			_doctorRepository = doctorRepository;
 		}
-        public async Task<ServiceResponse<bool>> DeleteDoctorAsync(Guid id)
-        {
-            try
-            {
-                var doctor = await _doctorRepository.GetByIdAsync(id);
-                if (doctor == null)
-                {
-                    return new ServiceResponse<bool>
-                    {
-                        IsSuccess = false,
-                        Data = false,
-                        Message = "Doctor not found"
-                    };
-                }
-
-                var result = await _doctorRepository.DeleteAsync(id);
-
-                if (result)
-                {
-                    return new ServiceResponse<bool>
-                    {
-                        IsSuccess = true,
-                        Data = true,
-                        Message = "Doctor and associated user deleted successfully"
-                    };
-                }
-                else
-                {
-                    return new ServiceResponse<bool>
-                    {
-                        IsSuccess = false,
-                        Data = false,
-                        Message = "Failed to delete doctor and user"
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse<bool>
-                {
-                    IsSuccess = false,
-                    Data = false,
-                    Message = $"An error occurred: {ex.Message}"
-                };
-            }
-        }
-
-
-        public async Task<ServiceResponse<List<GetAllDoctors>>> GetAllDoctorsAsync()
-        {
-            try
-            {
-                var doctors = await _doctorRepository.GetAllAsync();
-
-                if (doctors == null || !doctors.Any())
-                {
-                    return new ServiceResponse<List<GetAllDoctors>>
-                    {
-                        IsSuccess = false,
-                        Message = "No doctors found"
-                    };
-                }
-
-                var doctorDtos = new List<GetAllDoctors>();
-
-                foreach (var doctor in doctors)
-                {
-                    doctorDtos.Add(new GetAllDoctors
-                    {
-                        FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
-                        Email = doctor.User.Email,
-                        Specialty = doctor.Specialty,
-                    });
-                }
-
-                return new ServiceResponse<List<GetAllDoctors>>
-                {
-                    Data = doctorDtos,
-                    IsSuccess = true,
-                    Message = "Doctors retrieved successfully"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse<List<GetAllDoctors>>
-                {
-                    IsSuccess = false,
-                    Message = $"An error occurred: {ex.Message}"
-                };
-            }
-        }
-
-
-        public async Task<ServiceResponse<List<GetAllDoctors>>> GetByAvailability(DoctorAvailability availability)
+		public async Task<ServiceResponse<bool>> DeleteDoctorAsync(Guid id)
 		{
 			try
 			{
-				var doctors = await _doctorRepository.GetByAvailability(availability);
-				var doctorDtos = new List<GetAllDoctors>();
+				var doctor = await _doctorRepository.GetByIdAsync(id);
+				if (doctor == null)
+				{
+					return new ServiceResponse<bool>
+					{
+						IsSuccess = false,
+						Data = false,
+						Message = "Doctor not found"
+					};
+				}
+
+				var result = await _doctorRepository.DeleteAsync(id);
+				if (result)
+				{
+					return new ServiceResponse<bool>
+					{
+						IsSuccess = true,
+						Data = true,
+						Message = "Doctor and associated user deleted successfully"
+					};
+				}
+				else
+				{
+					return new ServiceResponse<bool>
+					{
+						IsSuccess = false,
+						Data = false,
+						Message = "Failed to delete doctor and user"
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				return new ServiceResponse<bool>
+				{
+					IsSuccess = false,
+					Data = false,
+					Message = $"An error occurred: {ex.Message}"
+				};
+			}
+		}
+		public async Task<ServiceResponse<List<DoctorResponseModel>>> GetAllDoctorsAsync()
+		{
+			try
+			{
+				var doctors = await _doctorRepository.GetAllAsync();
+				var doctorDtos = new List<DoctorResponseModel>();
 
 				foreach (var doctor in doctors)
 				{
-					doctorDtos.Add(new GetAllDoctors
-                    {
-                        FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
-                        Email = doctor.User.Email,
-                        Specialty = doctor.Specialty,
-
-                    });
+					doctorDtos.Add(new DoctorResponseModel
+					{
+						FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
+						Phone = doctor.Phone,
+						Email = doctor.User.Email,
+						Specialty = doctor.Specialty,
+						Availability = doctor.Availability.ToString(),
+					});
 				}
-				return new ServiceResponse<List<GetAllDoctors>>
+				return new ServiceResponse<List<DoctorResponseModel>>
 				{
 					Data = doctorDtos,
 					IsSuccess = true,
@@ -131,7 +84,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 			catch (Exception ex)
 			{
-				return new ServiceResponse<List<GetAllDoctors>>
+				return new ServiceResponse<List<DoctorResponseModel>>
 				{
 					IsSuccess = false,
 					Message = $"An error occurred: {ex.Message}"
@@ -139,54 +92,91 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-        public async Task<ServiceResponse<List<GetAllDoctors>>> GetBySpecialtyAsync(string specialty)
-        {
-            try
-            {
-                var doctors = await _doctorRepository.GetBySpecialtyAsync(specialty);
+		public async Task<ServiceResponse<List<DoctorResponseModel>>> GetByAvailability(DoctorAvailability availability)
+		{
+			try
+			{
+				var doctors = await _doctorRepository.GetByAvailability(availability);
+				var doctorDtos = new List<DoctorResponseModel>();
 
-                if (doctors == null || !doctors.Any())
-                {
-                    return new ServiceResponse<List<GetAllDoctors>>
-                    {
-                        IsSuccess = false,
-                        Data = null,
-                        Message = $"No doctors found with specialty '{specialty}'."
-                    };
-                }
+				foreach (var doctor in doctors)
+				{
+					doctorDtos.Add(new DoctorResponseModel
+					{
+						FullName = doctor.User.FirstName + " " + doctor.User.LastName,
+						Email = doctor.User.Email,
+						Phone = doctor.Phone,
+						Specialty = doctor.Specialty,
+						Availability = doctor.Availability.ToString()
 
-                var doctorDtos = new List<GetAllDoctors>();
+					});
+				}
+				return new ServiceResponse<List<DoctorResponseModel>>
+				{
+					Data = doctorDtos,
+					IsSuccess = true,
+					Message = "Doctors retrieved successfully"
+				};
+			}
+			catch (Exception ex)
+			{
+				return new ServiceResponse<List<DoctorResponseModel>>
+				{
+					IsSuccess = false,
+					Message = $"An error occurred: {ex.Message}"
+				};
+			}
+		}
 
-                foreach (var doctor in doctors)
-                {
-                    doctorDtos.Add(new GetAllDoctors
-                    {
-                        FullName = $"{doctor.User.FirstName} {doctor.User.LastName}",
-                        Email = doctor.User.Email,
-                        Specialty = doctor.Specialty,
+		public async Task<ServiceResponse<List<DoctorResponseModel>>> GetBySpecialtyAsync(string specialty)
+		{
+			try
+			{
+				var doctors = await _doctorRepository.GetBySpecialtyAsync(specialty);
 
-                    });
-                }
+				if (doctors == null || !doctors.Any())
+				{
+					return new ServiceResponse<List<DoctorResponseModel>>
+					{
+						IsSuccess = false,
+						Data = null,
+						Message = $"No doctors found with specialty '{specialty}'."
+					};
+				}
 
-                return new ServiceResponse<List<GetAllDoctors>>
-                {
-                    Data = doctorDtos,
-                    IsSuccess = true,
-                    Message = "Doctors retrieved successfully"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse<List<GetAllDoctors>>
-                {
-                    IsSuccess = false,
-                    Data = null,
-                    Message = $"An error occurred: {ex.Message}"
-                };
-            }
-        }
+				var doctorDtos = new List<DoctorResponseModel>();
+				foreach (var doctor in doctors)
+				{
+					doctorDtos.Add(new DoctorResponseModel
+					{
+						FullName = doctor.User.FirstName + " " + doctor.User.LastName,
+						Email = doctor.User.Email,
+						Phone = doctor.Phone,
+						Specialty = doctor.Specialty,
+						Availability = doctor.Availability.ToString()
+					});
 
-        public async Task<ServiceResponse<DoctorDTO>> GetDoctorByIdAsync(Guid id)
+				}
+
+				return new ServiceResponse<List<DoctorResponseModel>>
+				{
+					Data = doctorDtos,
+					IsSuccess = true,
+					Message = "Doctors retrieved successfully"
+				};
+			}
+			catch (Exception ex)
+			{
+				return new ServiceResponse<List<DoctorResponseModel>>
+				{
+					IsSuccess = false,
+					Data = null,
+					Message = $"An error occurred: {ex.Message}"
+				};
+			}
+		}
+
+		public async Task<ServiceResponse<DoctorDTO>> GetDoctorByIdAsync(Guid id)
 		{
 			try
 			{
@@ -244,7 +234,16 @@ namespace HospitalManagementSystem.Implementations.Services
 
 				existingDoctor.Phone = doctorDto.Phone;
 				existingDoctor.Specialty = doctorDto.Specialty;
-				existingDoctor.Availability = doctorDto.Availability;
+				string availabilityInput = doctorDto.Availability?.Trim();
+
+				if (System.Enum.TryParse<DoctorAvailability>(availabilityInput, true, out var parsedAvailability))
+				{
+					existingDoctor.Availability = parsedAvailability;
+				}
+				else
+				{
+					throw new ArgumentException("Invalid doctor availability value.");
+				}
 				if (!string.IsNullOrWhiteSpace(doctorDto.Password))
 				{
 					existingDoctor.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(doctorDto.Password);

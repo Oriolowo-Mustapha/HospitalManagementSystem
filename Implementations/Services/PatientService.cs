@@ -1,22 +1,19 @@
 ﻿using HospitalManagementSystem.DTOs;
-using HospitalManagementSystem.Entities;
-using HospitalManagementSystem.Implementations.Repository;
 using HospitalManagementSystem.Interface.Repository;
 using HospitalManagementSystem.Interface.Services;
-using System.Numerics;
 
 namespace HospitalManagementSystem.Implementations.Services
 {
 	public class PatientService : IPatientService
 	{
 		private readonly IPatientRepository _patientRepository;
+		private readonly IUserRepository _userRepository;
 
-		public PatientService(IPatientRepository patientRepository)
+		public PatientService(IPatientRepository patientRepository, IUserRepository userRepository)
 		{
 			_patientRepository = patientRepository;
+			_userRepository = userRepository;
 		}
-
-
 
 		public async Task<ServiceResponse<PatientDTO>> GetPatientByIdAsync(Guid id)
 		{
@@ -32,31 +29,51 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
-			return new PatientDTO
-			{
-				Id = patient.Id,
-				Phone = patient.Phone,
-				InsuranceProvider = patient.InsuranceProvider,
-				InsuranceDiscount = patient.InsuranceDiscount,
-                Name = $"{patient.User.FirstName} {patient.User.LastName}",
-				Email = patient.User.Email
-            };
-        }
+				var patientDto = new PatientDTO
+				{
+					Id = patient.Id,
+					FirstName = patient.User.FirstName,
+					LastName = patient.User.LastName,
+					Username = patient.User.Username,
+					Phone = patient.Phone,
+					Email = patient.User.Email,
+					InsuranceProvider = patient.InsuranceProvider,
+					InsuranceDiscount = patient.InsuranceDiscount
+				};
 
-		public async Task<IEnumerable<GetAllPatients>> GetAllPatientsAsync()
-		{
-			var patients = await _patientRepository.GetAllPatientsAsync();
-			var patientDtos = new List<GetAllPatients>();
-
-			foreach (var patient in patients)
-			{
-				patientDtos.Add(new GetAllPatients
-                {					
-					Phone = patient.Phone,					
-                     Name = $"{patient.User.FirstName} {patient.User.LastName}",
-                    Email = patient.User.Email
-                });
+				return new ServiceResponse<PatientDTO>
+				{
+					Data = patientDto,
+					IsSuccess = true,
+					Message = "Patient retrieved successfully."
+				};
 			}
+			catch (Exception ex)
+			{
+				return new ServiceResponse<PatientDTO>
+				{
+					IsSuccess = false,
+					Message = $"Error occurred: {ex.Message}"
+				};
+			}
+		}
+
+		public async Task<ServiceResponse<List<PatientDTO>>> GetAllPatientsAsync()
+		{
+			try
+			{
+				var patients = await _patientRepository.GetAllPatientsAsync();
+				var patientDtos = patients.Select(patient => new PatientDTO
+				{
+					Id = patient.Id,
+					FirstName = patient.User.FirstName,
+					LastName = patient.User.LastName,
+					Username = patient.User.Username,
+					Phone = patient.Phone,
+					Email = patient.User.Email,
+					InsuranceProvider = patient.InsuranceProvider,
+					InsuranceDiscount = patient.InsuranceDiscount
+				}).ToList();
 
 				return new ServiceResponse<List<PatientDTO>>
 				{
@@ -89,56 +106,117 @@ namespace HospitalManagementSystem.Implementations.Services
 					};
 				}
 
-			return new PatientDTO
+				var patientDto = new PatientDTO
+				{
+					Id = patient.Id,
+					FirstName = patient.User.FirstName,
+					LastName = patient.User.LastName,
+					Username = patient.User.Username,
+					Phone = patient.Phone,
+					Email = patient.User.Email,
+					InsuranceProvider = patient.InsuranceProvider,
+					InsuranceDiscount = patient.InsuranceDiscount
+				};
+
+				return new ServiceResponse<PatientDTO>
+				{
+					Data = patientDto,
+					IsSuccess = true,
+					Message = "Patient retrieved successfully."
+				};
+			}
+			catch (Exception ex)
 			{
-				Id = patient.Id,
-				Phone = patient.Phone,
-                Name = $"{patient.User.FirstName} {patient.User.LastName}",
-                Email = patient.User.Email,
-                InsuranceProvider = patient.InsuranceProvider,
-				InsuranceDiscount = patient.InsuranceDiscount
-			};
+				return new ServiceResponse<PatientDTO>
+				{
+					IsSuccess = false,
+					Message = $"Error occurred: {ex.Message}"
+				};
+			}
 		}
 
-
-			public async Task UpdatePatientAsync(Guid id, UpdatePatientDTO patientDto)
+		public async Task<ServiceResponse<bool>> UpdatePatientAsync(Guid id, UpdatePatientRequestModel patientDto)
+		{
+			try
 			{
 				var patient = await _patientRepository.GetPatientByIdAsync(id);
 				if (patient == null)
 				{
-					throw new Exception("Patient not found");
+					return new ServiceResponse<bool>
+					{
+						IsSuccess = false,
+						Message = "Patient not found."
+					};
 				}
 
-				
+				var user = await _userRepository.GetUserByIdAsync((Guid)patient.UserId);
+
+				user.FirstName = patientDto.FirstName;
+				user.LastName = patientDto.LastName;
+				user.Email = patientDto.Email;
+				user.Username = patientDto.Username;
+
+				if (!string.IsNullOrWhiteSpace(patientDto.Password) &&
+					!BCrypt.Net.BCrypt.Verify(patientDto.Password, user.PasswordHash))
+				{
+					user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(patientDto.Password);
+				}
+
+				await _userRepository.UpdateUserAsync(user);
+
 				patient.Phone = patientDto.Phone;
 				patient.InsuranceProvider = patientDto.InsuranceProvider;
 				patient.InsuranceDiscount = patientDto.InsuranceDiscount;
 
-				
-				if (patient.User != null)
+				await _patientRepository.UpdatePatientAsync(patient);
+
+				return new ServiceResponse<bool>
 				{
-					patient.User.FirstName = patientDto.firstname;
-					patient.User.LastName = patientDto.lastname;
-					patient.User.Email = patientDto.Email;
-					patient.User.Username = patientDto.Username;
-
-
-                if (!string.IsNullOrWhiteSpace(patientDto.Password) &&
-                        !BCrypt.Net.BCrypt.Verify(patientDto.Password, patient.User.PasswordHash))
-                {
-                    patient.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(patientDto.Password);
-                }
-
-
-                await _patientRepository.UpdatePatientAsync(patient);
+					IsSuccess = true,
+					Message = "Patient updated successfully."
+				};
 			}
-        }
+			catch (Exception ex)
+			{
+				return new ServiceResponse<bool>
+				{
+					IsSuccess = false,
+					Message = $"Update failed: {ex.Message}"
+				};
+			}
+		}
 
-
-
-        public async Task DeletePatientAsync(Guid id)
+		public async Task<ServiceResponse<bool>> DeletePatientAsync(Guid id)
 		{
-			await _patientRepository.DeletePatientAsync(id);
+			try
+			{
+				var patient = await _patientRepository.GetPatientByIdAsync(id);
+				if (patient == null)
+				{
+					return new ServiceResponse<bool>
+					{
+						IsSuccess = false,
+						Message = "Patient not found."
+					};
+				}
+
+				await _userRepository.DeleteUserAsync((Guid)patient.UserId);
+				await _patientRepository.DeletePatientAsync(id);
+
+				return new ServiceResponse<bool>
+				{
+					IsSuccess = true,
+					Message = "Patient deleted successfully."
+				};
+			}
+			catch (Exception ex)
+			{
+				return new ServiceResponse<bool>
+				{
+					IsSuccess = false,
+					Message = $"Deletion failed: {ex.Message}"
+				};
+			}
 		}
 	}
 }

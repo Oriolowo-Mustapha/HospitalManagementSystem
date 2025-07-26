@@ -3,28 +3,28 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HospitalManagementSystem.DTOs
 {
-    public class AppointmentDTO
-    {
-        public Guid Id { get; set; }
-        public DateTime AppointmentDate => AppointmentDateTime.Date;
+	public class AppointmentDTO
+	{
+		public Guid Id { get; set; }
+		public DateTime AppointmentDate => AppointmentDateTime.Date;
 
-        // Change from enum to string
-        public string Status { get; set; }
+		// Change from enum to string
+		public string Status { get; set; }
 
-        public Guid PatientId { get; set; }
-        public Guid DoctorId { get; set; }
+		public Guid PatientId { get; set; }
+		public Guid DoctorId { get; set; }
 
-        public string Notes { get; set; }
+		public string Notes { get; set; }
 
-        public DateTime AppointmentDateTime { get; set; }
+		public DateTime AppointmentDateTime { get; set; }
 
-        public string DoctorName { get; set; }
-        public string PatientName { get; set; }
-    }
+		public string DoctorName { get; set; }
+		public string PatientName { get; set; }
+	}
 
 
 
-    public class AppointmentRequestDto
+	public class AppointmentRequestDto
 	{
 		[Required]
 		public Guid PatientId { get; set; }
@@ -50,8 +50,7 @@ namespace HospitalManagementSystem.DTOs
 		[Required]
 		public Guid DoctorId { get; set; }
 		[Required]
-		public DateTime AppointmentDateTime { get; set; } 
+		public DateTime AppointmentDateTime { get; set; }
 		public AppointmentStatus Status { get; set; }
-	
 	}
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Controllers
 {
+
 	[Route("api/[controller]")]
 	[ApiController]
 	public class ScheduleController : ControllerBase
@@ -14,22 +15,19 @@ namespace HospitalManagementSystem.Controllers
 		{
 			_scheduleService = scheduleService;
 		}
+		[HttpGet("doctors/{doctorId}/schedules")]
+		public async Task<IActionResult> GetSchedulesByDoctorId(Guid doctorId)
+		{
+			var response = await _scheduleService.GetSchedulesByDoctorIdAsync(doctorId);
 
-        [HttpGet("doctors/{doctorId}/schedules")]
-        public async Task<IActionResult> GetSchedulesByDoctorId(Guid doctorId)
-        {
-            var response = await _scheduleService.GetSchedulesByDoctorIdAsync(doctorId);
+			if (!response.IsSuccess)
+			{
+				return NotFound(new { message = response.Message });
+			}
+			return Ok(response.Data);
+		}
 
-            if (!response.IsSuccess)
-            {
-                return NotFound(new { message = response.Message });
-            }
-
-            return Ok(response.Data);
-        }
-
-
-        [HttpGet("schedules/{id}")]
+		[HttpGet("schedules/{id}")]
 		public async Task<IActionResult> GetScheduleById(Guid id)
 		{
 			var response = await _scheduleService.GetScheduleByIdAsync(id);
@@ -41,7 +39,7 @@ namespace HospitalManagementSystem.Controllers
 		}
 
 		[HttpPost("doctors/{doctorId}/schedules")]
-		public async Task<IActionResult> CreateSchedule(Guid doctorId, [FromBody] ScheduleDTO scheduleDto)
+		public async Task<IActionResult> CreateSchedule(Guid doctorId, [FromBody] createScheduleRequestModel scheduleDto)
 		{
 			if (scheduleDto == null)
 			{
@@ -57,7 +55,7 @@ namespace HospitalManagementSystem.Controllers
 		}
 
 		[HttpPut("schedules/{id}")]
-		public async Task<IActionResult> UpdateSchedule(Guid id, [FromBody] ScheduleDTO scheduleDto)
+		public async Task<IActionResult> UpdateSchedule(Guid id, [FromBody] createScheduleRequestModel scheduleDto)
 		{
 			if (scheduleDto == null)
 			{
@@ -84,7 +82,7 @@ namespace HospitalManagementSystem.Controllers
 		}
 
 		[HttpPost("schedules/validate")]
-		public async Task<IActionResult> ValidateSchedule(Guid doctorId, [FromBody] ScheduleDTO scheduleDto)
+		public async Task<IActionResult> ValidateSchedule(Guid doctorId, [FromBody] createScheduleRequestModel scheduleDto)
 		{
 			if (scheduleDto == null)
 			{
@@ -99,4 +97,5 @@ namespace HospitalManagementSystem.Controllers
 			return Ok(response.Data);
 		}
 	}
+
 }
