@@ -92,11 +92,34 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
-		public async Task<ServiceResponse<List<DoctorResponseModel>>> GetByAvailability(DoctorAvailability availability)
+		public async Task<ServiceResponse<List<DoctorResponseModel>>> GetByAvailability(string availability)
 		{
+			DoctorAvailability doctorAvailability;
 			try
 			{
-				var doctors = await _doctorRepository.GetByAvailability(availability);
+				string availabilityInput = availability?.Trim();
+
+				if (System.Enum.TryParse<DoctorAvailability>(availabilityInput, true, out var parsedAvailability))
+				{
+					doctorAvailability = parsedAvailability;
+				}
+				else
+				{
+					return new ServiceResponse<List<DoctorResponseModel>>
+					{
+						IsSuccess = false,
+						Message = "Invalid doctor availability value."
+					};
+				}
+				var doctors = await _doctorRepository.GetByAvailability(doctorAvailability);
+				if (!doctors.Any() || doctors.Count == 0)
+				{
+					return new ServiceResponse<List<DoctorResponseModel>>
+					{
+						IsSuccess = true,
+						Message = "No doctors are available at the selected time. Please try a different availability window."
+					};
+				}
 				var doctorDtos = new List<DoctorResponseModel>();
 
 				foreach (var doctor in doctors)
@@ -242,7 +265,11 @@ namespace HospitalManagementSystem.Implementations.Services
 				}
 				else
 				{
-					throw new ArgumentException("Invalid doctor availability value.");
+					return new ServiceResponse<DoctorDTO>
+					{
+						IsSuccess = false,
+						Message = "Invalid doctor availability value."
+					};
 				}
 				if (!string.IsNullOrWhiteSpace(doctorDto.Password))
 				{

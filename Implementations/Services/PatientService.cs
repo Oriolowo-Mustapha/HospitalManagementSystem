@@ -37,7 +37,7 @@ namespace HospitalManagementSystem.Implementations.Services
 					Username = patient.User.Username,
 					Phone = patient.Phone,
 					Email = patient.User.Email,
-					InsuranceProvider = patient.InsuranceProvider,
+					InsuranceProvider = patient.Insurance.Name,
 					InsuranceDiscount = patient.InsuranceDiscount
 				};
 
@@ -71,8 +71,8 @@ namespace HospitalManagementSystem.Implementations.Services
 					Username = patient.User.Username,
 					Phone = patient.Phone,
 					Email = patient.User.Email,
-					InsuranceProvider = patient.InsuranceProvider,
-					InsuranceDiscount = patient.InsuranceDiscount
+					InsuranceProvider = patient.Insurance.Name,
+					InsuranceDiscount = patient.Insurance.DiscountPercentage
 				}).ToList();
 
 				return new ServiceResponse<List<PatientDTO>>
@@ -114,7 +114,7 @@ namespace HospitalManagementSystem.Implementations.Services
 					Username = patient.User.Username,
 					Phone = patient.Phone,
 					Email = patient.User.Email,
-					InsuranceProvider = patient.InsuranceProvider,
+					InsuranceProvider = patient.Insurance.Name,
 					InsuranceDiscount = patient.InsuranceDiscount
 				};
 
@@ -165,8 +165,8 @@ namespace HospitalManagementSystem.Implementations.Services
 				await _userRepository.UpdateUserAsync(user);
 
 				patient.Phone = patientDto.Phone;
-				patient.InsuranceProvider = patientDto.InsuranceProvider;
-				patient.InsuranceDiscount = patientDto.InsuranceDiscount;
+				patient.Insurance.Name = patientDto.InsuranceProvider;
+				patient.Insurance.DiscountPercentage = patientDto.InsuranceDiscount;
 
 				await _patientRepository.UpdatePatientAsync(patient);
 

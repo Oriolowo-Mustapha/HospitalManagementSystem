@@ -5,23 +5,24 @@ namespace HospitalManagementSystem.Entities
 {
 	public class Patient : BaseEntity
 	{
-
-		[Required]
 		public DateTime DateOfBirth { get; set; }
 
 		[StringLength(11)]
 		public string Phone { get; set; }
 
-		public string InsuranceProvider { get; set; }
+		[ForeignKey("Insurance")]
+		public int? InsuranceId { get; set; }
+		public Insurance Insurance { get; set; }
 
-		public decimal InsuranceDiscount { get; set; }
+		[NotMapped]
+		public decimal InsuranceDiscount => Insurance?.DiscountPercentage ?? 0;
 
 		[ForeignKey("User")]
 		public Guid? UserId { get; set; }
-
 		public User User { get; set; }
 
 		public List<Appointment> Appointments { get; set; }
 		public List<Billing> Billings { get; set; }
 	}
+
 }

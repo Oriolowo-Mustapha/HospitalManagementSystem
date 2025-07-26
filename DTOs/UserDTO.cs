@@ -48,9 +48,6 @@ namespace HospitalManagementSystem.DTOs
 
 		[StringLength(100, ErrorMessage = "Insurance provider name can't exceed 100 characters.")]
 		public string InsuranceProvider { get; set; }
-
-		[Range(0, 100, ErrorMessage = "Insurance discount must be between 0 and 100.")]
-		public decimal InsuranceDiscount { get; set; }
 	}
 
 	public class AddDoctorRequestDto
