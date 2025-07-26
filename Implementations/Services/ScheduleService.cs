@@ -14,8 +14,17 @@ namespace HospitalManagementSystem.Implementations.Services
 			_scheduleRepository = scheduleRepository;
 			_doctorRepository = doctorRepository;
 		}
-		public async Task<ServiceResponse<ScheduleDTO>> CreateScheduleAsync(ScheduleDTO scheduleDto, Guid doctorId)
+		public async Task<ServiceResponse<ScheduleDTO>> CreateScheduleAsync(createScheduleRequestModel scheduleDto, Guid doctorId)
 		{
+			var doctor = await _doctorRepository.GetByIdAsync(doctorId);
+			if (doctor == null)
+			{
+				return new ServiceResponse<ScheduleDTO>
+				{
+					IsSuccess = false,
+					Message = "Doctor not found"
+				};
+			}
 			if (!await _scheduleRepository.ValidateScheduleAsync(doctorId, scheduleDto))
 			{
 				return new ServiceResponse<ScheduleDTO>
@@ -111,76 +120,68 @@ namespace HospitalManagementSystem.Implementations.Services
 			{
 				Data = GetSchedule,
 				IsSuccess = true,
-				Message = ""
+				Message = "Schedule Retrieved Successfully"
 			};
 		}
-        public async Task<ServiceResponse<List<ScheduleDTO>>> GetSchedulesByDoctorIdAsync(Guid doctorId)
-        {
-            try
-            {
-                var schedules = await _scheduleRepository.GetByDoctorIdAsync(doctorId);
 
-                // Check for both null and empty list
-                if (schedules == null || !schedules.Any())
-                {
-                    return new ServiceResponse<List<ScheduleDTO>>
-                    {
-                        IsSuccess = false,
-                        Message = "No schedules available for this doctor."
-                    };
-                }
+		public async Task<ServiceResponse<List<ScheduleDTO>>> GetSchedulesByDoctorIdAsync(Guid doctorId)
+		{
+			try
+			{
+				var schedules = await _scheduleRepository.GetByDoctorIdAsync(doctorId);
 
-                var scheduleDtos = schedules.Select(schedule => new ScheduleDTO
-                {
-                    Date = schedule.Date,
-                    StartTime = schedule.StartTime,
+				// Check for both null and empty list
+				if (schedules == null || !schedules.Any())
+				{
+					return new ServiceResponse<List<ScheduleDTO>>
+					{
+						IsSuccess = false,
+						Message = "No schedules available for this doctor."
+					};
+				}
+
+				var scheduleDtos = schedules.Select(schedule => new ScheduleDTO
+				{
+					Date = schedule.Date,
+					StartTime = schedule.StartTime,
 					Id = schedule.Id,
 					DoctorId = schedule.DoctorId,
-                    EndTime = schedule.EndTime,
-                    DailyAppointmentLimit = schedule.DailyAppointmentLimit
-                }).ToList();
+					EndTime = schedule.EndTime,
+					DailyAppointmentLimit = schedule.DailyAppointmentLimit
+				}).ToList();
 
-                return new ServiceResponse<List<ScheduleDTO>>
-                {
-                    Data = scheduleDtos,
-                    IsSuccess = true,
-                    Message = "Schedules retrieved successfully."
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResponse<List<ScheduleDTO>>
-                {
-                    IsSuccess = false,
-                    Message = $"Error retrieving schedules: {ex.Message}"
-                };
-            }
-        }
+				return new ServiceResponse<List<ScheduleDTO>>
+				{
+					Data = scheduleDtos,
+					IsSuccess = true,
+					Message = "Schedules retrieved successfully."
+				};
+			}
+			catch (Exception ex)
+			{
+				return new ServiceResponse<List<ScheduleDTO>>
+				{
+					IsSuccess = false,
+					Message = $"Error retrieving schedules: {ex.Message}"
+				};
+			}
+		}
 
 
-        public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto)
+		public async Task<ServiceResponse<ScheduleDTO>> UpdateScheduleAsync(Guid doctorId, createScheduleRequestModel scheduleDto)
 		{
-			var existingDoctor = await _doctorRepository.GetByIdAsync(doctorId);
-			if (existingDoctor == null)
+			var GetScheduleById = await _scheduleRepository.GetByIdAsync(doctorId);
+			if (GetScheduleById == null)
 			{
 				return new ServiceResponse<ScheduleDTO>
 				{
 					IsSuccess = false,
-					Message = "Doctor not found"
+					Message = "Schedule not found,Try Adding A Schedule Before Updating it."
 				};
 			}
 
-			var existingSchedule = await _scheduleRepository.GetByCurrentScheduleDoctorIdAsync(doctorId);
-			if (existingSchedule == null)
-			{
-				return new ServiceResponse<ScheduleDTO>
-				{
-					IsSuccess = false,
-					Message = $"Schedule on {existingSchedule.Date} Is Unavailable"
-				};
-			}
 
-			if (!await _scheduleRepository.ValidateScheduleAsync(doctorId, scheduleDto, existingSchedule.Id))
+			if (!await _scheduleRepository.ValidateScheduleAsync(GetScheduleById.DoctorId, scheduleDto, GetScheduleById.Id))
 			{
 				return new ServiceResponse<ScheduleDTO>
 				{
@@ -192,8 +193,7 @@ namespace HospitalManagementSystem.Implementations.Services
 
 			var schedule = new Schedule
 			{
-				Id = existingDoctor.Id,
-				DoctorId = existingSchedule.DoctorId,
+				DoctorId = GetScheduleById.DoctorId,
 				Date = scheduleDto.Date,
 				StartTime = scheduleDto.StartTime,
 				EndTime = scheduleDto.EndTime,
@@ -220,7 +220,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			};
 		}
 
-		public async Task<ServiceResponse<bool>> ValidateScheduleAsync(Guid doctorId, ScheduleDTO scheduleDto)
+		public async Task<ServiceResponse<bool>> ValidateScheduleAsync(Guid doctorId, createScheduleRequestModel scheduleDto)
 		{
 			var validate = await _scheduleRepository.ValidateScheduleAsync(doctorId, scheduleDto);
 			if (validate == false)

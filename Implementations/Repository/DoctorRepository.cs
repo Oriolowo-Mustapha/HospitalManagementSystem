@@ -22,26 +22,26 @@ namespace HospitalManagementSystem.Implementations.Repository
 			return doctor;
 		}
 
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var doctor = await _context.Doctors
-                .Include(d => d.User)
-                .FirstOrDefaultAsync(d => d.Id == id || d.UserId == id);
+		public async Task<bool> DeleteAsync(Guid id)
+		{
+			var doctor = await _context.Doctors
+				.Include(d => d.User)
+				.FirstOrDefaultAsync(d => d.Id == id || d.UserId == id);
 
-            if (doctor == null)
-            {
-                return false;
-            }
+			if (doctor == null)
+			{
+				return false;
+			}
 
-            _context.Users.Remove(doctor.User);
+			_context.Users.Remove(doctor.User);
 
-            await _context.SaveChangesAsync();
-            return true;
-        }
+			await _context.SaveChangesAsync();
+			return true;
+		}
 
 
 
-        public async Task<List<Doctor>> GetAllAsync()
+		public async Task<List<Doctor>> GetAllAsync()
 		{
 			return await _context.Doctors
 				.Include(d => d.User)
@@ -68,19 +68,16 @@ namespace HospitalManagementSystem.Implementations.Repository
 				.Include(d => d.Appointments)
 				.FirstOrDefaultAsync(d => d.UserId == id || d.Id == id);
 		}
-
-        public async Task<List<Doctor>> GetBySpecialtyAsync(string specialty)
-        {
-            return await _context.Doctors
-                .Include(d => d.User)
-                .Include(d => d.Schedules)
-                .Include(d => d.Appointments)
-                .Where(d => d.Specialty != null && d.Specialty.ToLower() == specialty.ToLower())
-                .ToListAsync();
-        }
-
-
-        public async Task<Doctor> UpdateAsync(Doctor doctor)
+		public async Task<List<Doctor>> GetBySpecialtyAsync(string specialty)
+		{
+			return await _context.Doctors
+				.Include(d => d.User)
+				.Include(d => d.Schedules)
+				.Include(d => d.Appointments)
+				.Where(d => d.Specialty != null && d.Specialty.ToLower() == specialty.ToLower())
+				.ToListAsync();
+		}
+		public async Task<Doctor> UpdateAsync(Doctor doctor)
 		{
 			_context.Doctors.Update(doctor);
 			await _context.SaveChangesAsync();

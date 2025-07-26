@@ -1,9 +1,11 @@
 ﻿using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Interface.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Controllers
 {
+	[Authorize(Roles = "Patient")]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class PatientController : ControllerBase
@@ -53,19 +55,19 @@ namespace HospitalManagementSystem.Controllers
 			return Ok(response.Data);
 		}
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientDTO patientDto)
-        {
-            try
-            {
-                await _patientService.UpdatePatientAsync(id, patientDto);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+		[HttpPut("{id}")]
+		public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] UpdatePatientRequestModel patientDto)
+		{
+			try
+			{
+				await _patientService.UpdatePatientAsync(id, patientDto);
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeletePatient(Guid id)
@@ -75,7 +77,7 @@ namespace HospitalManagementSystem.Controllers
 			{
 				return BadRequest(response.Message);
 			}
-			return NoContent();
+			return Ok(response.Data);
 		}
 	}
 }

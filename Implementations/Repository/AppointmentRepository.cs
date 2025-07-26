@@ -14,21 +14,21 @@ namespace HospitalManagementSystem.Implementations.Repository
 			_context = context;
 		}
 
-        public async Task<Appointment> CreateAsync(Appointment appointment)
-        {
-            await _context.Appointments.AddAsync(appointment);
-            await _context.SaveChangesAsync();
+		public async Task<Appointment> CreateAsync(Appointment appointment)
+		{
+			await _context.Appointments.AddAsync(appointment);
+			await _context.SaveChangesAsync();
 
-            var createdAppointment = await _context.Appointments
-                .Include(a => a.Doctor).ThenInclude(d => d.User)
-                .Include(a => a.Patient).ThenInclude(p => p.User)
-                .FirstOrDefaultAsync(a => a.Id == appointment.Id);
+			var createdAppointment = await _context.Appointments
+				.Include(a => a.Doctor).ThenInclude(d => d.User)
+				.Include(a => a.Patient).ThenInclude(p => p.User)
+				.FirstOrDefaultAsync(a => a.Id == appointment.Id);
 
-            return createdAppointment!;
-        }
+			return createdAppointment!;
+		}
 
 
-        public async Task<bool> DeleteAsync(Guid id)
+		public async Task<bool> DeleteAsync(Guid id)
 		{
 			var appointment = await _context.Appointments.FindAsync(id);
 			if (appointment == null)
@@ -38,20 +38,20 @@ namespace HospitalManagementSystem.Implementations.Repository
 			_context.Appointments.Remove(appointment);
 			return true;
 		}
-        public async Task<List<Appointment>> GetAllAsync()
-        {
-            return await _context.Appointments
-                .Include(a => a.Patient)
-                    .ThenInclude(p => p.User)
-                .Include(a => a.Doctor)
-                    .ThenInclude(d => d.User)
-                .Include(a => a.Schedule)
-                .Include(a => a.Services)
-                .ToListAsync();
-        }
+		public async Task<List<Appointment>> GetAllAsync()
+		{
+			return await _context.Appointments
+				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
+				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
+				.Include(a => a.Schedule)
+				.Include(a => a.Services)
+				.ToListAsync();
+		}
 
 
-        public async Task<List<Appointment>> GetByAppointmentStatus(AppointmentStatus appointmentStatus)
+		public async Task<List<Appointment>> GetByAppointmentStatus(AppointmentStatus appointmentStatus)
 		{
 			return await _context.Appointments
 				.Include(a => a.Patient)
@@ -62,47 +62,47 @@ namespace HospitalManagementSystem.Implementations.Repository
 				.ToListAsync();
 		}
 
-        public async Task<List<Appointment>> GetByDoctorIdAsync(Guid doctorId)
-        {
-            return await _context.Appointments
-                .Include(a => a.Patient)
-                    .ThenInclude(p => p.User)
-                .Include(a => a.Doctor)
-                    .ThenInclude(d => d.User)
-                .Include(a => a.Schedule)
-                .Include(a => a.Services)
-                .Where(a => a.DoctorId == doctorId || a.Id == doctorId)
-                .ToListAsync();
-        }
+		public async Task<List<Appointment>> GetByDoctorIdAsync(Guid doctorId)
+		{
+			return await _context.Appointments
+				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
+				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
+				.Include(a => a.Schedule)
+				.Include(a => a.Services)
+				.Where(a => a.DoctorId == doctorId || a.Id == doctorId)
+				.ToListAsync();
+		}
 
 
-        public async Task<Appointment> GetByIdAsync(Guid id)
-        {
-            return await _context.Appointments
-                .Include(a => a.Patient)
-                    .ThenInclude(p => p.User)
-                .Include(a => a.Doctor)
-                    .ThenInclude(d => d.User)
-                .Include(a => a.Schedule)
-                .Include(a => a.Services)
-                .FirstOrDefaultAsync(a => a.Id == id);
-        }
+		public async Task<Appointment> GetByIdAsync(Guid id)
+		{
+			return await _context.Appointments
+				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
+				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
+				.Include(a => a.Schedule)
+				.Include(a => a.Services)
+				.FirstOrDefaultAsync(a => a.Id == id);
+		}
 
-        public async Task<List<Appointment>> GetByPatientIdAsync(Guid patientId)
-        {
-            return await _context.Appointments
-                .Include(a => a.Patient)
-                    .ThenInclude(p => p.User)
-                .Include(a => a.Doctor)
-                    .ThenInclude(d => d.User)
-                .Include(a => a.Schedule)
-                .Include(a => a.Services)
-                .Where(a => a.PatientId == patientId || a.Id == patientId)
-                .ToListAsync();
-        }
+		public async Task<List<Appointment>> GetByPatientIdAsync(Guid patientId)
+		{
+			return await _context.Appointments
+				.Include(a => a.Patient)
+					.ThenInclude(p => p.User)
+				.Include(a => a.Doctor)
+					.ThenInclude(d => d.User)
+				.Include(a => a.Schedule)
+				.Include(a => a.Services)
+				.Where(a => a.PatientId == patientId || a.Id == patientId)
+				.ToListAsync();
+		}
 
 
-        public async Task<List<Appointment>> GetByScheduleIdAsync(Guid scheduleId)
+		public async Task<List<Appointment>> GetByScheduleIdAsync(Guid scheduleId)
 		{
 			return await _context.Appointments
 				.Include(a => a.Patient)

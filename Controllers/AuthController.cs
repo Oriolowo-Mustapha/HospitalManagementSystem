@@ -1,5 +1,6 @@
 ﻿using HospitalManagementSystem.DTOs;
 using HospitalManagementSystem.Interface.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Controllers
@@ -15,7 +16,7 @@ namespace HospitalManagementSystem.Controllers
 			_authService = authService;
 		}
 
-
+		[AllowAnonymous]
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] RegisterPatientRequestDto model)
 		{
@@ -28,8 +29,10 @@ namespace HospitalManagementSystem.Controllers
 
 			return Ok(result.Data);
 		}
-
-	
+		/// <summary>
+		/// Logs in an existing user
+		/// </summary>
+		[AllowAnonymous]
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
 		{
