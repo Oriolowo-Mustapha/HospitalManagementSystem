@@ -50,6 +50,22 @@ namespace HospitalManagementSystem.Implementations.Repository
 				.FirstOrDefaultAsync(p => p.User.Email == email);
 		}
 
+		public async Task<List<Patient>> SearchByNameAsync(string name)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				return new List<Patient>();
+
+			name = name.Trim().ToLower();
+
+			return await _context.Patients
+				.Where(p =>
+					EF.Functions.Like(p.User.FirstName.ToLower(), $"%{name}%") ||
+					EF.Functions.Like(p.User.LastName.ToLower(), $"%{name}%") ||
+					EF.Functions.Like((p.User.FirstName + " " + p.User.LastName).ToLower(), $"%{name}%"))
+				.ToListAsync();
+		}
+
+
 		public async Task UpdatePatientAsync(Patient patient)
 		{
 			_context.Patients.Update(patient);

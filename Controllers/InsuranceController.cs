@@ -7,35 +7,32 @@ namespace HospitalManagementSystem.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class InsuranceController : ControllerBase
+	public class InsuranceController(IInsuranceService insuranceService) : ControllerBase
 	{
-		private readonly IInsuranceService _insuranceService;
-
-		public InsuranceController(IInsuranceService insuranceService)
-		{
-			_insuranceService = insuranceService;
-		}
 
 		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> AddInsurance([FromBody] AddInsuranceDto dto)
 		{
-			var result = await _insuranceService.AddInsuranceAsync(dto);
-			return result.IsSuccess ? Ok(result) : BadRequest(result);
+			var result = await insuranceService.AddInsuranceAsync(dto);
+			return result.IsSuccess ? Ok(result) : Ok(result.Message);
 		}
 
+		[Authorize]
 		[HttpGet]
+
 		public async Task<IActionResult> GetAll()
 		{
-			var result = await _insuranceService.GetAllAsync();
+			var result = await insuranceService.GetAllAsync();
 			return Ok(result);
 		}
 
+		[Authorize]
 		[HttpGet("{name}")]
 		public async Task<IActionResult> GetByName(string name)
 		{
-			var result = await _insuranceService.GetByNameAsync(name);
-			return result.IsSuccess ? Ok(result) : NotFound(result);
+			var result = await insuranceService.GetByNameAsync(name);
+			return result.IsSuccess ? Ok(result) : Ok(result.Message);
 		}
 	}
 }

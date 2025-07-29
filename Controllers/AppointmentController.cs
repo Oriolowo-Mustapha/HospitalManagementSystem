@@ -23,13 +23,13 @@ namespace HospitalManagementSystem.Controllers
 		{
 			if (dto == null)
 			{
-				return BadRequest("Appointment data is required.");
+				return Ok("Appointment data is required.");
 			}
 
 			var result = await _service.CreateAppointmentAsync(dto);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return CreatedAtAction(nameof(Get), new { id = result.Data.Id }, result.Data);
 		}
@@ -40,7 +40,7 @@ namespace HospitalManagementSystem.Controllers
 			var result = await _service.GetAllAppointmentsAsync();
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Data);
 		}
@@ -51,7 +51,7 @@ namespace HospitalManagementSystem.Controllers
 			var result = await _service.GetAppointmentByIdAsync(id);
 			if (!result.IsSuccess)
 			{
-				return NotFound(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Data);
 		}
@@ -62,7 +62,7 @@ namespace HospitalManagementSystem.Controllers
 			var result = await _service.GetAppointmentsByPatientIdAsync(patientId);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Data);
 		}
@@ -73,7 +73,7 @@ namespace HospitalManagementSystem.Controllers
 			var result = await _service.GetAppointmentsByDoctorIdAsync(doctorId);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Data);
 		}
@@ -83,13 +83,13 @@ namespace HospitalManagementSystem.Controllers
 		{
 			if (dto == null)
 			{
-				return BadRequest("Appointment update data is required.");
+				return Ok("Appointment update data is required.");
 			}
 
 			var result = await _service.RescheduleAppointmentAsync(id, dto);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Data);
 		}
@@ -100,7 +100,7 @@ namespace HospitalManagementSystem.Controllers
 			var result = await _service.CancelAppointmentAsync(id);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Message);
 		}
@@ -111,7 +111,7 @@ namespace HospitalManagementSystem.Controllers
 			var result = await _service.ApproveAppointmentAsync(id);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Message);
 		}
@@ -122,7 +122,7 @@ namespace HospitalManagementSystem.Controllers
 			var result = await _service.DisapproveAppointmentAsync(id);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Message);
 		}
@@ -132,13 +132,13 @@ namespace HospitalManagementSystem.Controllers
 		{
 			if (dto == null)
 			{
-				return BadRequest("Note data is required.");
+				return Ok("Note data is required.");
 			}
 
 			var result = await _service.UpdateAppointmentNote(id, dto);
 			if (!result.IsSuccess)
 			{
-				return BadRequest(result.Message);
+				return Ok(result.Message);
 			}
 			return Ok(result.Message);
 		}

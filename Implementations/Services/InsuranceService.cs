@@ -58,7 +58,7 @@ namespace HospitalManagementSystem.Implementations.Services
 			{
 				Data = result,
 				IsSuccess = true,
-				Message = "Insurance providers retrieved successfully."
+				Message = result.Any() ? "Insurance providers retrieved successfully." : "No Insurance providers found."
 			};
 		}
 
