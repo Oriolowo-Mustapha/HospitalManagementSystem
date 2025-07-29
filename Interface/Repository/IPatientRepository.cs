@@ -8,6 +8,7 @@ namespace HospitalManagementSystem.Interface.Repository
 		Task<Patient> GetPatientByIdAsync(Guid id);
 		Task<IEnumerable<Patient>> GetAllPatientsAsync();
 		Task<Patient> GetPatientByEmailAsync(string email);
+		Task<List<Patient>> SearchByNameAsync(string name);
 		Task UpdatePatientAsync(Patient patient);
 		Task DeletePatientAsync(Guid id);
 	}

@@ -1,7 +1,10 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace HospitalManagementSystem.Migrations
 {
@@ -12,6 +15,36 @@ namespace HospitalManagementSystem.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Insurances",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: false),
+                    DiscountPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Insurances", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Specialties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Specialties", x => x.Id);
+                })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -68,8 +101,7 @@ namespace HospitalManagementSystem.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Phone = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false),
-                    InsuranceProvider = table.Column<string>(type: "longtext", nullable: false),
-                    InsuranceDiscount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    InsuranceId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<Guid>(type: "char(36)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     LastLogin = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -78,6 +110,12 @@ namespace HospitalManagementSystem.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Patients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Patients_Insurances_InsuranceId",
+                        column: x => x.InsuranceId,
+                        principalTable: "Insurances",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Patients_Users_UserId",
                         column: x => x.UserId,
@@ -238,9 +276,27 @@ namespace HospitalManagementSystem.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.InsertData(
+                table: "Specialties",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "GeneralPractitioner" },
+                    { 2, "Pediatrician" },
+                    { 3, "Cardiologist" },
+                    { 4, "Surgeon" },
+                    { 5, "Dermatologist" },
+                    { 6, "Obstetrician" },
+                    { 7, "Radiologist" },
+                    { 8, "Neurologist" },
+                    { 9, "Psychiatrist" },
+                    { 10, "Oncologist" },
+                    { 11, "Dentist" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "FirstName", "IsActive", "LastLogin", "LastName", "PasswordHash", "Role", "UpdatedAt", "Username" },
-                values: new object[] { new Guid("38a60000-a75d-38ea-f3ae-08ddc9ced78c"), new DateTime(2025, 7, 23, 9, 53, 57, 949, DateTimeKind.Utc).AddTicks(4785), "admin@gmail.com", "Admin", true, new DateTime(2025, 7, 23, 9, 53, 57, 326, DateTimeKind.Utc).AddTicks(2808), "Admin", "$2a$11$zWXkvGJTCTyyCtT4iDel7exMGtdX9w.7Ccep2QdAZNVbWnrMCksDS", "Admin", new DateTime(2025, 7, 23, 9, 53, 57, 326, DateTimeKind.Utc).AddTicks(2808), "admin" });
+                values: new object[] { new Guid("38a60000-a75d-38ea-0c16-08ddcc8aa5ad"), new DateTime(2025, 7, 26, 21, 23, 21, 792, DateTimeKind.Utc).AddTicks(8557), "admin@gmail.com", "Admin", true, new DateTime(2025, 7, 26, 21, 23, 21, 361, DateTimeKind.Utc).AddTicks(2150), "Admin", "$2a$11$JQcz1rKNhWdmCq4oHJ3o8O/ijkTJKtADKISFbGaM5ty.fNo3HLzNW", "Admin", new DateTime(2025, 7, 26, 21, 23, 21, 361, DateTimeKind.Utc).AddTicks(2151), "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_DoctorId",
@@ -279,6 +335,12 @@ namespace HospitalManagementSystem.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Insurances_Name",
+                table: "Insurances",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MedicalService_AppointmentId",
                 table: "MedicalService",
                 column: "AppointmentId");
@@ -287,6 +349,11 @@ namespace HospitalManagementSystem.Migrations
                 name: "IX_MedicalService_BillingId",
                 table: "MedicalService",
                 column: "BillingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Patients_InsuranceId",
+                table: "Patients",
+                column: "InsuranceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Patients_UserId",
@@ -310,6 +377,9 @@ namespace HospitalManagementSystem.Migrations
                 name: "MedicalService");
 
             migrationBuilder.DropTable(
+                name: "Specialties");
+
+            migrationBuilder.DropTable(
                 name: "Billings");
 
             migrationBuilder.DropTable(
@@ -320,6 +390,9 @@ namespace HospitalManagementSystem.Migrations
 
             migrationBuilder.DropTable(
                 name: "Schedules");
+
+            migrationBuilder.DropTable(
+                name: "Insurances");
 
             migrationBuilder.DropTable(
                 name: "Doctors");

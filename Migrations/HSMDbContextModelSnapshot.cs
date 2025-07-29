@@ -3,7 +3,6 @@ using System;
 using HospitalManagementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,11 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HospitalManagementSystem.Migrations
 {
     [DbContext(typeof(HSMDbContext))]
-    [Migration("20250723095401_Final")]
-    partial class Final
+    partial class HSMDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,6 +170,31 @@ namespace HospitalManagementSystem.Migrations
                     b.ToTable("Doctors");
                 });
 
+            modelBuilder.Entity("HospitalManagementSystem.Entities.Insurance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("DiscountPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Insurances");
+                });
+
             modelBuilder.Entity("HospitalManagementSystem.Entities.MedicalService", b =>
                 {
                     b.Property<Guid>("Id")
@@ -223,12 +245,8 @@ namespace HospitalManagementSystem.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<decimal>("InsuranceDiscount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("InsuranceProvider")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int?>("InsuranceId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("LastLogin")
                         .HasColumnType("datetime(6)");
@@ -245,6 +263,8 @@ namespace HospitalManagementSystem.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InsuranceId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -287,6 +307,78 @@ namespace HospitalManagementSystem.Migrations
                     b.HasIndex("DoctorId");
 
                     b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Entities.Specialty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Specialties");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "GeneralPractitioner"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Pediatrician"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Cardiologist"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Surgeon"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Dermatologist"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Obstetrician"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Radiologist"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Neurologist"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Psychiatrist"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Oncologist"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Dentist"
+                        });
                 });
 
             modelBuilder.Entity("HospitalManagementSystem.Entities.User", b =>
@@ -343,16 +435,16 @@ namespace HospitalManagementSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("38a60000-a75d-38ea-f3ae-08ddc9ced78c"),
-                            CreatedAt = new DateTime(2025, 7, 23, 9, 53, 57, 949, DateTimeKind.Utc).AddTicks(4785),
+                            Id = new Guid("38a60000-a75d-38ea-0c16-08ddcc8aa5ad"),
+                            CreatedAt = new DateTime(2025, 7, 26, 21, 23, 21, 792, DateTimeKind.Utc).AddTicks(8557),
                             Email = "admin@gmail.com",
                             FirstName = "Admin",
                             IsActive = true,
-                            LastLogin = new DateTime(2025, 7, 23, 9, 53, 57, 326, DateTimeKind.Utc).AddTicks(2808),
+                            LastLogin = new DateTime(2025, 7, 26, 21, 23, 21, 361, DateTimeKind.Utc).AddTicks(2150),
                             LastName = "Admin",
-                            PasswordHash = "$2a$11$zWXkvGJTCTyyCtT4iDel7exMGtdX9w.7Ccep2QdAZNVbWnrMCksDS",
+                            PasswordHash = "$2a$11$JQcz1rKNhWdmCq4oHJ3o8O/ijkTJKtADKISFbGaM5ty.fNo3HLzNW",
                             Role = "Admin",
-                            UpdatedAt = new DateTime(2025, 7, 23, 9, 53, 57, 326, DateTimeKind.Utc).AddTicks(2808),
+                            UpdatedAt = new DateTime(2025, 7, 26, 21, 23, 21, 361, DateTimeKind.Utc).AddTicks(2151),
                             Username = "admin"
                         });
                 });
@@ -446,9 +538,16 @@ namespace HospitalManagementSystem.Migrations
 
             modelBuilder.Entity("HospitalManagementSystem.Entities.Patient", b =>
                 {
+                    b.HasOne("HospitalManagementSystem.Entities.Insurance", "Insurance")
+                        .WithMany("Patients")
+                        .HasForeignKey("InsuranceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("HospitalManagementSystem.Entities.User", "User")
                         .WithOne("Patient")
                         .HasForeignKey("HospitalManagementSystem.Entities.Patient", "UserId");
+
+                    b.Navigation("Insurance");
 
                     b.Navigation("User");
                 });
@@ -481,6 +580,11 @@ namespace HospitalManagementSystem.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Entities.Insurance", b =>
+                {
+                    b.Navigation("Patients");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem.Entities.Patient", b =>

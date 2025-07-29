@@ -135,6 +135,45 @@ namespace HospitalManagementSystem.Implementations.Services
 			}
 		}
 
+		public async Task<ServiceResponse<List<PatientDTO>>> SearchPatientsByNameAsync(string name)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				return new ServiceResponse<List<PatientDTO>>
+				{
+					IsSuccess = false,
+					Message = "Name is required."
+				};
+			}
+
+			var patients = await _patientRepository.SearchByNameAsync(name);
+
+			if (!patients.Any())
+			{
+				return new ServiceResponse<List<PatientDTO>>
+				{
+					IsSuccess = false,
+					Message = "No patients found matching that name."
+				};
+			}
+
+			var result = patients.Select(p => new PatientDTO
+			{
+				Id = p.Id,
+				FirstName = p.User.FirstName,
+				LastName = p.User.LastName,
+				Email = p.User.Email,
+				Phone = p.Phone
+			}).ToList();
+
+			return new ServiceResponse<List<PatientDTO>>
+			{
+				IsSuccess = true,
+				Data = result
+			};
+		}
+
+
 		public async Task<ServiceResponse<bool>> UpdatePatientAsync(Guid id, UpdatePatientRequestModel patientDto)
 		{
 			try
